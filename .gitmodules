@@ -1,0 +1,7 @@
+[submodule "rai"]
+	path = rai
+	url = https://github.com/MarcToussaint/rai.git
+	branch = marc
+[submodule "rai-robotModels"]
+	path = rai-robotModels
+	url = https://github.com/MarcToussaint/rai-robotModels.git
