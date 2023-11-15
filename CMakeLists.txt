@@ -170,8 +170,8 @@ target_link_libraries(meshTool rai)
 
 # Removed the bot executable related to botop
 
-add_executable(campnp rai/test/LGP/pickAndPlace/main.cpp)
-target_link_libraries(campnp rai)
+add_executable(pickandplace test/pickAndPLace/main.cpp)
+target_link_libraries(pickandplace rai)
 
 ################################################################################
 
@@ -183,7 +183,7 @@ install(
         COMPONENT pkgconfig)
 
 install(
-        TARGETS kinEdit meshTool campnp
+        TARGETS kinEdit meshTool pickandplace
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # [Rest of your CMake file below]
