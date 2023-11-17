@@ -170,7 +170,11 @@ target_link_libraries(meshTool rai)
 
 # Removed the bot executable related to botop
 
-add_executable(pickandplace test/pickAndPLace/main.cpp)
+add_executable(pickandplace test/pickAndPLace/main.cpp
+        src/GenericFolFile.cpp
+        src/GenericFolFile.h
+        src/GenerateDecisionRule.cpp
+        src/GenerateDecisionRule.h)
 target_link_libraries(pickandplace rai)
 
 ################################################################################
