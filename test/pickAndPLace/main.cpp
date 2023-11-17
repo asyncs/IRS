@@ -90,6 +90,7 @@ int solve(int environmentType, const char *terminalRule) {
     lgp.displayBound = rai::BD_seqPath;
     lgp.verbose = 2;
     lgp.fol.writePDDLfiles("z");
+    //todo make a new run that can isolate its high level task plan
     lgp.run(1000000);
 
     for (auto *s: lgp.solutions.set()()) {
