@@ -8,6 +8,8 @@
 #include <KOMO/komo.h>
 #include "../../src/GenericFolFile.h"
 #include "../../src/GenerateDecisionRule.h"
+#include "../../src/MiniLGP.h"
+
 
 
 std::string rootPath = "/home/asy/git/CA-TAMP/";
@@ -103,6 +105,26 @@ int solve(int environmentType, const char *terminalRule) {
     return 0;
 }
 
+void deneme(){
+    rai::Configuration C;
+
+    GenericFolFile affordableFol(rootPath + "models/scenes/fol-pnp-switch.g",
+                                 rootPath + "test/pickAndPLace/fol-pnp-switch.g");
+    affordableFol.deleteModifiedFile();
+    GenerateDecisionRule();
+    std::string decisionRule = GenerateDecisionRule::getDecisionRule("TransportAffordable",
+                                                                     4); // If this number is lower than goal, then there is a need for carry affordable decision rule, e.g. can hold 4 but can transport only 3. Need to separate table from the trey logically. They should have the same capacity.
+    affordableFol.createModifiedFile(decisionRule);
+
+    generateProblem(C, 1);
+
+    C.selectJointsByAtt({"base", "armR"});
+    C.optimizeTree();
+
+    MiniLGP miniLGP(C, "fol-pnp-switch.g", "(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3)");
+    miniLGP.solveMiniLGP();
+}
+
 
 int MAIN(int argc, char **argv) {
     const char *const problems[] = {
@@ -115,7 +137,8 @@ int MAIN(int argc, char **argv) {
     };
 
     rai::initCmdLine(argc, argv);
-    int status = solve(3, problems[2]);
+    //int status = solve(3, problems[5]);
+    deneme();
 
-    return status;
+    return 0;
 }
