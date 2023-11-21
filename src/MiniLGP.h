@@ -10,17 +10,20 @@
 #include <Kin/kin.h>
 
 
-class MiniLGP{
+class MiniLGP : public rai::LGP_Tree{
 public:
-    MiniLGP(rai::Configuration &kinematicWorld, const char *folFile, const char *counterfactualGoal);
-    rai::LGP_Tree_SolutionData* solveMiniLGP();
-private:
-    rai::Configuration &kinematicWorld;
-    const char* problemFolFile;
-    const char* counterfactualGoal;
+    MiniLGP(const rai::Configuration& _kin, const char* folFileName) : LGP_Tree(_kin, folFileName) {}
+    void initWithNode(rai::LGP_Node* root);
+    void runPartial(uint steps, rai::LGP_Node* startNode);
 
-    rai::LGP_Tree_SolutionData* imagineHighLevel();
-    void getSolution();
+private:
+
+//    rai::LGP_Tree_SolutionData* imagineHighLevel();
+//    void getSolution();
+//    void runPartial();
+//    void init(rai::LGP_Tree &tree, rai::LGP_Node* root);
+//
+//    rai::LGP_Tree_SolutionData *solveMiniLGP();
 };
 
 

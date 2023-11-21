@@ -4,36 +4,54 @@
 
 #include "MiniLGP.h"
 
-MiniLGP::MiniLGP(rai::Configuration &kinematicWorld, const char *folFile, const char *counterfactualGoal)
-        : kinematicWorld(kinematicWorld), problemFolFile(folFile), counterfactualGoal(counterfactualGoal) {}
 
-rai::LGP_Tree_SolutionData* MiniLGP::solveMiniLGP() {
-    getSolution();
-    return nullptr;
-    //return imagineHighLevel();
+
+
+void MiniLGP::initWithNode(rai::LGP_Node *root) {
+    if (root == nullptr){
+        root = new rai::LGP_Node(*this, rai::BD_max);
+    }
+    fringe_expand.append(root);
+    fringe_pose.append(root);
 }
 
-rai::LGP_Tree_SolutionData* MiniLGP::imagineHighLevel() {
-    rai::LGP_Tree mini(kinematicWorld, problemFolFile);
-    mini.fol.addTerminalRule(counterfactualGoal);
-    mini.displayBound = rai::BD_symbolic;
-    mini.verbose = 2;
-    mini.run();
+void MiniLGP::runPartial(uint steps, rai::LGP_Node *startNode) {
+    initWithNode(startNode);
 
-    for (auto *s: mini.solutions.set()()) {
-        cout << "SOLUTION:\n";
-        s->write(cout);
-        cout << endl;
+    uint stopSol = rai::getParameter<double>("LGP/stopSol", 12);
+    double stopTime = rai::getParameter<double>("LGP/stopTime", 400.);
+
+    for(uint k=0; k<steps; k++) {
+        step();
+
+        if(fringe_solved.N>=stopSol) break;
+        if(COUNT_time>stopTime) break;
     }
 
-    rai::wait();
-    return nullptr;
+    if(verbose>0) report(true);
+
+    //basic output
+    ofstream output(dataPath+"lgpopt");
+    writeNodeList(output);
+    output.close();
 }
-
-void MiniLGP::getSolution() {
-    rai::LGP_Tree mini(kinematicWorld, problemFolFile);
-    mini.fol.addTerminalRule(counterfactualGoal);
-    mini.getSymbolicSolutions(8);
-}
-
-
+//    init(startNode);
+//    uint stopSol = rai::getParameter<double>("LGP/stopSol", 12);
+//    double stopTime = rai::getParameter<double>("LGP/stopTime", 400.);
+//
+//    for(uint k=0; k<steps; k++) {
+//        step();
+//
+//        if(fringe_solved.N>=stopSol) break;
+//        if(COUNT_time>stopTime) break;
+//    }
+//
+//    if(verbose>0) report(true);
+//
+//    //basic output
+//    ofstream output(dataPath+"lgpopt");
+//    writeNodeList(output);
+//    output.close();
+//
+//    if(verbose>1) views.clear();
+//}

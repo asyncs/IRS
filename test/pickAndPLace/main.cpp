@@ -105,7 +105,7 @@ int solve(int environmentType, const char *terminalRule) {
     return 0;
 }
 
-void deneme(){
+int solveMini(int environmentType, const char *terminalRule){
     rai::Configuration C;
 
     GenericFolFile affordableFol(rootPath + "models/scenes/fol-pnp-switch.g",
@@ -116,13 +116,33 @@ void deneme(){
                                                                      4); // If this number is lower than goal, then there is a need for carry affordable decision rule, e.g. can hold 4 but can transport only 3. Need to separate table from the trey logically. They should have the same capacity.
     affordableFol.createModifiedFile(decisionRule);
 
-    generateProblem(C, 1);
-
+    if (!generateProblem(C, environmentType)) {
+        return 1;
+    }
     C.selectJointsByAtt({"base", "armR"});
     C.optimizeTree();
 
-    MiniLGP miniLGP(C, "fol-pnp-switch.g", "(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3)");
-    miniLGP.solveMiniLGP();
+    MiniLGP miniLgp(C, "fol-pnp-switch.g");
+
+    miniLgp.fol.addTerminalRule(
+            terminalRule); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
+    miniLgp.displayBound = rai::BD_seqPath;
+    miniLgp.verbose = 2;
+    miniLgp.fol.writePDDLfiles("z");
+    //todo make a new run that can isolate its high level task plan
+    rai::LGP_Node* root  = nullptr;
+
+
+    miniLgp.runPartial(1000000, root);
+
+    for (auto *s: miniLgp.solutions.set()()) {
+        cout << "SOLUTION:\n";
+        s->write(cout);
+        cout << endl;
+    }
+
+    rai::wait();
+    return 0;
 }
 
 
@@ -138,7 +158,7 @@ int MAIN(int argc, char **argv) {
 
     rai::initCmdLine(argc, argv);
     //int status = solve(3, problems[5]);
-    deneme();
+    int status = solveMini(3, problems[5]);
 
-    return 0;
+    return status;
 }
