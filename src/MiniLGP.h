@@ -10,7 +10,7 @@
 #include <Kin/kin.h>
 
 
-class MiniLGP : public rai::LGP_Tree {
+class MiniLGP{
 public:
     MiniLGP(rai::Configuration &kinematicWorld, const char *folFile, const char *counterfactualGoal);
     rai::LGP_Tree_SolutionData* solveMiniLGP();
@@ -20,6 +20,7 @@ private:
     const char* counterfactualGoal;
 
     rai::LGP_Tree_SolutionData* imagineHighLevel();
+    void getSolution();
 };
 
 

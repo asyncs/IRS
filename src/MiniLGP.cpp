@@ -8,7 +8,9 @@ MiniLGP::MiniLGP(rai::Configuration &kinematicWorld, const char *folFile, const 
         : kinematicWorld(kinematicWorld), problemFolFile(folFile), counterfactualGoal(counterfactualGoal) {}
 
 rai::LGP_Tree_SolutionData* MiniLGP::solveMiniLGP() {
-    return imagineHighLevel();
+    getSolution();
+    return nullptr;
+    //return imagineHighLevel();
 }
 
 rai::LGP_Tree_SolutionData* MiniLGP::imagineHighLevel() {
@@ -26,6 +28,12 @@ rai::LGP_Tree_SolutionData* MiniLGP::imagineHighLevel() {
 
     rai::wait();
     return nullptr;
+}
+
+void MiniLGP::getSolution() {
+    rai::LGP_Tree mini(kinematicWorld, problemFolFile);
+    mini.fol.addTerminalRule(counterfactualGoal);
+    mini.getSymbolicSolutions(8);
 }
 
 
