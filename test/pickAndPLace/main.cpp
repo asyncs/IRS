@@ -133,15 +133,17 @@ int solveMini(int environmentType, const char *terminalRule){
     rai::LGP_Node* root  = nullptr;
 
 
-    miniLgp.runPartial(1000000, root);
+    rai::LGP_NodeL initial_list = miniLgp.runPartial(1000000, root);
 
-    for (auto *s: miniLgp.solutions.set()()) {
-        cout << "SOLUTION:\n";
-        s->write(cout);
-        cout << endl;
-    }
 
-    rai::wait();
+
+//    for (auto *s: miniLgp.solutions.set()()) {
+//        cout << "SOLUTION:\n";
+//        s->write(cout);
+//        cout << endl;
+//    }
+//
+//    rai::wait();
     return 0;
 }
 
@@ -153,7 +155,9 @@ int MAIN(int argc, char **argv) {
             "(on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)",
             "(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3) (on kitchen_counter_goal obj0) (on kitchen_counter_goal obj1) (on kitchen_counter_goal obj2) (on kitchen_counter_goal obj3)",
             "(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3) (on kitchen_goal obj0) (on kitchen_goal obj1) (on kitchen_goal obj2) (on kitchen_goal obj3)",
-            "(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3)  (on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)"
+            "(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3)  (on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)",
+            "(on tray obj0)",
+            "(on dining_goal obj0)"
     };
 
     rai::initCmdLine(argc, argv);

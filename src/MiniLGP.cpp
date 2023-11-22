@@ -15,43 +15,59 @@ void MiniLGP::initWithNode(rai::LGP_Node *root) {
     fringe_pose.append(root);
 }
 
-void MiniLGP::runPartial(uint steps, rai::LGP_Node *startNode) {
-    initWithNode(startNode);
+void MiniLGP::initWithList(rai::LGP_NodeL &list) {
+    rai::LGP_Node *node = list.last();
+    for(; node;) {
+        auto* prostheticNode = new rai::LGP_Node(*this, rai::BD_max);
+        prostheticNode->skeleton = node->skeleton;
 
-    uint stopSol = rai::getParameter<double>("LGP/stopSol", 12);
-    double stopTime = rai::getParameter<double>("LGP/stopTime", 400.);
 
-    for(uint k=0; k<steps; k++) {
-        step();
 
-        if(fringe_solved.N>=stopSol) break;
-        if(COUNT_time>stopTime) break;
+
+        //node->tree = *this;
+        //path.prepend(node);
+        node = node->parent;
+    }
+}
+
+void MiniLGP::stepPartial() {
+    expandNext();
+
+    optFirstOnLevel(rai::BD_pose, fringe_poseToGoal, &fringe_seq);
+    optBestOnLevel(rai::BD_seq, fringe_seq, rai::BD_pose, &fringe_path, nullptr);
+    if(fringe_path.N){
+        cout <<"EVALUATING PATH " <<fringe_path.last()->getTreePathString() <<endl;
     }
 
-    if(verbose>0) report(true);
 
-    //basic output
-    ofstream output(dataPath+"lgpopt");
-    writeNodeList(output);
-    output.close();
+    //-- update queues (if something got infeasible)
+    clearFromInfeasibles(fringe_expand);
+    clearFromInfeasibles(fringe_pose);
+    clearFromInfeasibles(fringe_poseToGoal);
+    clearFromInfeasibles(fringe_seq);
+    clearFromInfeasibles(fringe_path);
+    clearFromInfeasibles(terminals);
+
+
+    numSteps++;
 }
-//    init(startNode);
-//    uint stopSol = rai::getParameter<double>("LGP/stopSol", 12);
-//    double stopTime = rai::getParameter<double>("LGP/stopTime", 400.);
-//
-//    for(uint k=0; k<steps; k++) {
-//        step();
-//
-//        if(fringe_solved.N>=stopSol) break;
-//        if(COUNT_time>stopTime) break;
-//    }
-//
-//    if(verbose>0) report(true);
-//
-//    //basic output
-//    ofstream output(dataPath+"lgpopt");
-//    writeNodeList(output);
-//    output.close();
-//
-//    if(verbose>1) views.clear();
-//}
+
+rai::LGP_NodeL MiniLGP::runPartial(uint steps, rai::LGP_Node *startNode) {
+    initWithNode(startNode);
+
+    uint stopPath = 1;
+    double stopTime = 400.;
+
+    for(uint k=0; k<steps; k++) {
+        stepPartial();
+
+        if (fringe_path.N >= stopPath) break;
+        if (COUNT_time > stopTime) break;
+    }
+    init();
+    return fringe_path;
+}
+
+
+
+
