@@ -124,16 +124,30 @@ int solveMini(int environmentType, const char *terminalRule){
 
     MiniLGP miniLgp(C, "fol-pnp-switch.g");
 
-    miniLgp.fol.addTerminalRule(
-            terminalRule); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
+    miniLgp.fol.addTerminalRule("(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3)"); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
     miniLgp.displayBound = rai::BD_seqPath;
     miniLgp.verbose = 2;
     miniLgp.fol.writePDDLfiles("z");
-    //todo make a new run that can isolate its high level task plan
     rai::LGP_Node* root  = nullptr;
-
-
     rai::LGP_NodeL initial_list = miniLgp.runPartial(1000000, root);
+
+//    affordableFol.deleteModifiedFile();
+//    GenerateDecisionRule();
+//    affordableFol.createModifiedFile(decisionRule);
+//
+//    if (!generateProblem(C, environmentType)) {
+//        return 1;
+//    }
+//    C.selectJointsByAtt({"base", "armR"});
+//    C.optimizeTree();
+
+    MiniLGP miniLgp2(C, "fol-pnp-switch.g");
+    miniLgp2.fol.addTerminalRule("(on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)"); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
+    miniLgp2.displayBound = rai::BD_seqPath;
+    miniLgp2.verbose = 2;
+    miniLgp2.fol.writePDDLfiles("z");
+    rai::LGP_NodeL final_list = miniLgp2.runPartial(1000000, initial_list);
+
 
 
 
