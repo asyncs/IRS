@@ -4,73 +4,97 @@
 
 #include "MiniLGP.h"
 
-void MiniLGP::copyNode(rai::LGP_Node *newNode, rai::LGP_Node *existingNode) {
-    newNode->skeleton = existingNode->skeleton;
-    newNode->problem = existingNode->problem;
-    newNode->step = existingNode->step;
-    newNode->time = existingNode->time;
-    newNode->decision = existingNode->decision;
-    newNode->ret = existingNode->ret;
-    newNode->isExpanded = existingNode->isExpanded;
-    newNode->isInfeasible = existingNode->isInfeasible;
-    newNode->isTerminal = false;
-    newNode->L = existingNode->L;
-    newNode->cost = existingNode->cost;
-    newNode->constraints = existingNode->constraints;
-    newNode->feasible = existingNode->feasible;
-    newNode->count = existingNode->count;
-    newNode->computeTime = existingNode->computeTime;
-    newNode->highestBound = existingNode->highestBound;
-    newNode->note = existingNode->note;
-}
-
 
 void MiniLGP::initWithNode(rai::LGP_Node *root) {
-    if (root == nullptr){
+    if (root == nullptr) {
         root = new rai::LGP_Node(*this, rai::BD_max);
     }
     fringe_expand.append(root);
     fringe_pose.append(root);
 }
 
-void MiniLGP::initWithList(rai::LGP_NodeL &list) {
-    //TODO LISTEYI TEK TEK PLAYERDAKI GIBI EXEC ET VE STATEI GETIR NIHAI OLARAK rai::BD_symbolic
-    //TODO bastan baslayip gidilebilir mi?
+void MiniLGP::initWithList(rai::LGP_NodeL &list, bool verbose) {
+    rai::LGP_NodeL decisions;
+    if (verbose){
+        cout << "INIT WITH LIST" << endl;
+        cout <<""<< endl;
+        cout <<""<< endl;
+    }
+
 
     rai::LGP_Node *node = list.last();
-    for(; node;) {
-        auto* postOpNode = new rai::LGP_Node(*this, rai::BD_max);
+    if (verbose){
+        cout << "LAST NODE: " << node->getTreePathString() << endl;
+        cout <<""<< endl;
+        cout <<""<< endl;
+    }
 
-        copyNode(postOpNode, node);
 
-        if (!node->children){
-            postOpNode->children = nullptr;
+    for (; node;) {
+        if(verbose){
+            cout << "REMAINING: " << node->getTreePathString() << endl;
+            cout <<""<< endl;
+        }
+
+
+        if (node->decision) {
+            if (verbose) cout << "DECISION: " << *node->decision << endl;
+            decisions.prepend(node);
+            if (verbose) cout << "DECISIONS: " << decisions.last()->getTreePathString() << endl;
         }
         else{
-            if (fringe_expand.N != 0){
-                postOpNode->children = fringe_expand.first();
-            }
+            if (verbose) cout << "DECISION: EMPTY ROOT NODE" << endl;
+            decisions.append(node);
         }
-
-        if (!node->parent){
-            postOpNode->parent = nullptr;
-        }
-        else{
-            if (fringe_expand.N != 0){
-                fringe_expand.first()->parent = postOpNode;
-            }
-        }
-        fringe_expand.prepend(postOpNode);
-        if (postOpNode->decision){
-            cout << "Decision: " << *postOpNode->decision << endl;
-        }
-        else{
-            cout << "Decision: ROOT " << endl;
-        }
-        if(postOpNode->count(1)) fringe_pose.prepend(postOpNode);
-        cout << "Remaining Node: " << node->getTreePathString() <<endl;
-        cout << "New fringe: " << fringe_expand.last()->getTreePathString() <<endl;
         node = node->parent;
+        if (verbose) cout <<""<< endl;
+    }
+    if (verbose) cout << "INITIALIZED" << endl;
+    root->expand();
+    if (verbose) cout << "ROOT EXPANDED" << endl;
+
+    if (verbose) cout<<"DECISIONS SIZE: "<<decisions.N<<endl;
+    while(decisions.N>1){
+        rai::LGP_Node *decisionNode = decisions.popFirst();
+        if (verbose){
+            cout<<"DECISIONS SIZE: "<<decisions.N<<endl;
+            cout << "POPPED DECISION NODE: " << *decisionNode->decision << endl;
+            cout << "FOCUS NODE: " << focusNode->getTreePathString() << endl;
+        }
+
+        rai::String decisionString;
+        decisionString<< (*decisionNode->decision.get());
+        if (decisionNode->decision) {
+            for(rai::LGP_Node* possibleChildren:focusNode->children) {
+                if(verbose){
+                    cout << "POSSIBLE CHILDREN: " << *possibleChildren->decision << endl;
+                    cout << "DECISION NODE: " << *decisionNode->decision << endl;
+                }
+
+                rai::String decisionChildrenString;
+                decisionChildrenString<< (*possibleChildren->decision.get());
+                if (decisionString == decisionChildrenString) {
+                    if (verbose) cout<< "FOUND CHILDREN: " << *possibleChildren->decision << endl;
+                    focusNode = possibleChildren;
+                    if(!focusNode->isExpanded && decisions.N >1){
+                        focusNode->expand();
+                    }
+                    else{
+                        if (verbose) cout<<"NODE ALREADY EXPANDED"<<endl;
+                        fringe_expand.append(focusNode);
+                        if (verbose) cout<<"NODE ADDED TO EXPAND FRINGE"<<*focusNode->decision<<endl;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    if (verbose){
+        cout << "FOCUS NODE: " << *focusNode->decision << endl;
+        cout << "FRINGE EXPAND CONTAINS: " << fringe_expand.N << " NODES" << endl;
+        cout << "FRINGE EXPAND CONTAINS: " << *fringe_expand.last()->decision << endl;
+        cout << "FOCUS NODE PATH: " << focusNode->getTreePathString() << endl;
+        cout << "FOCUS NODE STATE: " << *focusNode << endl;
     }
 }
 
@@ -79,8 +103,8 @@ void MiniLGP::stepPartial() {
 
     optFirstOnLevel(rai::BD_pose, fringe_poseToGoal, &fringe_seq);
     optBestOnLevel(rai::BD_seq, fringe_seq, rai::BD_pose, &fringe_path, nullptr);
-    if(fringe_path.N){
-        cout <<"EVALUATING PATH " <<fringe_path.last()->getTreePathString() <<endl;
+    if (fringe_path.N) {
+        cout << "EVALUATING PATH " << fringe_path.last()->getTreePathString() << endl;
     }
 
 
@@ -102,7 +126,7 @@ rai::LGP_NodeL MiniLGP::runPartial(uint steps, rai::LGP_Node *startNode) {
     uint stopPath = 1;
     double stopTime = 400.;
 
-    for(uint k=0; k<steps; k++) {
+    for (uint k = 0; k < steps; k++) {
         stepPartial();
 
         if (fringe_path.N >= stopPath) break;
@@ -113,18 +137,16 @@ rai::LGP_NodeL MiniLGP::runPartial(uint steps, rai::LGP_Node *startNode) {
 }
 
 rai::LGP_NodeL MiniLGP::runPartial(uint steps, rai::LGP_NodeL &list) {
-    initWithList(list);
-
-    uint stopPath = 1;
-    double stopTime =400.;
-
-    for(uint k=0; k<steps; k++) {
-        stepPartial();
-
-        if (fringe_path.N >= stopPath) break;
-        if (COUNT_time > stopTime) break;
-    }
+    //player();
+    initWithList(list, true);
+    focusNode->expand();
+//    for(uint s=0;; s++) {
+//        printChoices();
+//        rai::String cmd = queryForChoice();
+//        if(!execChoice(cmd)) break;
+//    }
     return fringe_path;
+
 }
 
 

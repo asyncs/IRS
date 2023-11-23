@@ -16,7 +16,7 @@ public:
 
     static void copyNode(rai::LGP_Node *newNode, rai::LGP_Node *existingNode);
     void initWithNode(rai::LGP_Node *root);
-    void initWithList(rai::LGP_NodeL &list);
+    void initWithList(rai::LGP_NodeL &list, bool verbose = false);
     void stepPartial();
     rai::LGP_NodeL runPartial(uint steps, rai::LGP_Node *startNode);
     rai::LGP_NodeL runPartial(uint steps, rai::LGP_NodeL &list);

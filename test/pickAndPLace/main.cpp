@@ -131,6 +131,23 @@ int solveMini(int environmentType, const char *terminalRule){
     rai::LGP_Node* root  = nullptr;
     rai::LGP_NodeL initial_list = miniLgp.runPartial(1000000, root);
 
+    affordableFol.deleteModifiedFile();
+    GenerateDecisionRule();
+    affordableFol.createModifiedFile(decisionRule);
+
+    if (!generateProblem(C, environmentType)) {
+        return 1;
+    }
+    C.selectJointsByAtt({"base", "armR"});
+    C.optimizeTree();
+
+    MiniLGP miniLgp2(C, "fol-pnp-switch.g");
+    miniLgp2.fol.addTerminalRule("(on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)"); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
+    miniLgp2.displayBound = rai::BD_seqPath;
+    miniLgp2.verbose = 2;
+    miniLgp2.fol.writePDDLfiles("z");
+    rai::LGP_NodeL final_list = miniLgp2.runPartial(1000000, initial_list);
+
 //    affordableFol.deleteModifiedFile();
 //    GenerateDecisionRule();
 //    affordableFol.createModifiedFile(decisionRule);
@@ -140,15 +157,12 @@ int solveMini(int environmentType, const char *terminalRule){
 //    }
 //    C.selectJointsByAtt({"base", "armR"});
 //    C.optimizeTree();
-
-    MiniLGP miniLgp2(C, "fol-pnp-switch.g");
-    miniLgp2.fol.addTerminalRule("(on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)"); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
-    miniLgp2.displayBound = rai::BD_seqPath;
-    miniLgp2.verbose = 2;
-    miniLgp2.fol.writePDDLfiles("z");
-    rai::LGP_NodeL final_list = miniLgp2.runPartial(1000000, initial_list);
-
-
+//
+//    rai::LGP_Tree lgp(C, "fol-pnp-switch.g");
+//
+////  lgp.inspectSequence("(pick pr2R obj0) (place pr2R obj0 tray)");
+////  lgp.inspectSequence("(pick pr2R obj0) (pick pr2L obj1) (place pr2R obj0 tray) (place pr2L obj1 tray) (pick pr2L obj2) (place pr2L obj2 tray)");
+//    lgp.inspectSequence("(on tray obj0) (on tray obj1) (on tray obj2) (on tray obj3)");
 
 
 //    for (auto *s: miniLgp.solutions.set()()) {
