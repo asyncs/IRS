@@ -13,16 +13,13 @@
 class MiniLGP : public rai::LGP_Tree {
 public:
     MiniLGP(const rai::Configuration &_kin, const char *folFileName) : LGP_Tree(_kin, folFileName) {}
-
-    static void copyNode(rai::LGP_Node *newNode, rai::LGP_Node *existingNode);
     void initWithNode(rai::LGP_Node *root);
     void initWithList(rai::LGP_NodeL &list, bool verbose = false);
     void stepPartial();
     rai::LGP_NodeL runPartial(uint steps, rai::LGP_Node *startNode);
     rai::LGP_NodeL runPartial(uint steps, rai::LGP_NodeL &list);
-
-
-
+    void actuate();
+    void display();
 };
 
 #endif //CA_TAMP_MINILGP_H

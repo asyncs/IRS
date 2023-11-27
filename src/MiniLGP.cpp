@@ -50,6 +50,7 @@ void MiniLGP::initWithList(rai::LGP_NodeL &list, bool verbose) {
         if (verbose) cout <<""<< endl;
     }
     if (verbose) cout << "INITIALIZED" << endl;
+    fringe_pose.append(root);
     root->expand();
     if (verbose) cout << "ROOT EXPANDED" << endl;
 
@@ -69,6 +70,10 @@ void MiniLGP::initWithList(rai::LGP_NodeL &list, bool verbose) {
                 if(verbose){
                     cout << "POSSIBLE CHILDREN: " << *possibleChildren->decision << endl;
                     cout << "DECISION NODE: " << *decisionNode->decision << endl;
+                }
+
+                if(focusNode->count(1)){
+                    fringe_pose.append(possibleChildren);
                 }
 
                 rai::String decisionChildrenString;
@@ -137,17 +142,34 @@ rai::LGP_NodeL MiniLGP::runPartial(uint steps, rai::LGP_Node *startNode) {
 }
 
 rai::LGP_NodeL MiniLGP::runPartial(uint steps, rai::LGP_NodeL &list) {
-    //player();
-    initWithList(list, true);
-    focusNode->expand();
-//    for(uint s=0;; s++) {
-//        printChoices();
-//        rai::String cmd = queryForChoice();
-//        if(!execChoice(cmd)) break;
-//    }
-    return fringe_path;
+    initWithList(list, false);
 
+    uint stopPath = 1;
+    double stopTime = 400.;
+
+    for (uint k = 0; k < steps; k++) {
+        stepPartial();
+
+        if (fringe_path.N >= stopPath) break;
+        if (COUNT_time > stopTime) break;
+    }
+    //init();
+    return fringe_path;
 }
+
+void MiniLGP::actuate() {
+    rai::String cmd = "x";
+    execChoice(cmd);
+    cout << "AFTER OPTIMIZATION"<< endl;
+    cout << *fringe_path.last() << endl;
+}
+
+void MiniLGP::display() {
+    initDisplay();
+    updateDisplay();
+    actuate();
+}
+
 
 
 
