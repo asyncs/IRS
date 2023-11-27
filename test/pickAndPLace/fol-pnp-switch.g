@@ -68,7 +68,7 @@ DecisionRule place {
 
 #####################################################################
 
-DecisionRule caryTransportAffordable {
+DecisionRule carryTransportAffordable {
   X, Y, Z, O1, O2, O3, O4,
   { (picked X Y) (table Z) (held Y) (on Y O1) (on Y O2) (on Y O3) (on Y O4)}
   { (picked X Y)! (busy X)! (busy Y)! (held Y)! # logic only

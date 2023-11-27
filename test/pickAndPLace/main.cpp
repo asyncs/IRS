@@ -9,6 +9,7 @@
 #include "../../src/GenericFolFile.h"
 #include "../../src/GenerateDecisionRule.h"
 #include "../../src/MiniLGP.h"
+#include "../../src/Compare.h"
 
 
 
@@ -147,6 +148,17 @@ int solveMini(int environmentType, const char *terminalRule){
     miniLgp2.verbose = 2;
     miniLgp2.fol.writePDDLfiles("z");
     rai::LGP_NodeL final_list = miniLgp2.runPartial(1000000, initial_list);
+
+    cout << "FINAL PATH: " << final_list.last()->getTreePathString() << endl;
+    cout << "FINAL STATE: " << *final_list.last() << endl;
+    cout << "******************************************************" << endl;
+    cout << *final_list.last()->skeleton << endl;
+
+    //miniLgp2.actuate();
+
+    Compare compare(C, C, miniLgp, miniLgp2);
+    compare.compare();
+
 
 //    affordableFol.deleteModifiedFile();
 //    GenerateDecisionRule();

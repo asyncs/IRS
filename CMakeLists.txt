@@ -176,7 +176,9 @@ add_executable(pickandplace test/pickAndPLace/main.cpp
         src/GenerateDecisionRule.cpp
         src/GenerateDecisionRule.h
         src/MiniLGP.cpp
-        src/MiniLGP.h)
+        src/MiniLGP.h
+        src/Compare.cpp
+        src/Compare.h)
 target_link_libraries(pickandplace rai)
 
 ################################################################################

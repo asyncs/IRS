@@ -15,7 +15,7 @@ std::string GenerateDecisionRule::generateRule(const std::string& affordanceType
 
     if (affordanceType == "TransportAffordable"){
         rule += "DecisionRule ";
-        rule += "cary";
+        rule += "carry";
         rule += affordanceType;
         rule += " {\n"
                 "  X, Y, Z";
