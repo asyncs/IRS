@@ -20,7 +20,7 @@ private:
     rai::LGP_NodeL simplePath;
     rai::LGP_NodeL counterfactualPath;
 
-    static int calculateCost(const rai::Configuration& kin, rai::LGP_NodeL &path);
+    static double calculateCost(const rai::Configuration& kin, rai::LGP_NodeL &path, bool verbose);
 };
 
 

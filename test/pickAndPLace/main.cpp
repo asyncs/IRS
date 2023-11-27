@@ -142,6 +142,15 @@ int solveMini(int environmentType, const char *terminalRule){
     C.selectJointsByAtt({"base", "armR"});
     C.optimizeTree();
 
+    MiniLGP miniLgp3(C, "fol-pnp-switch.g");
+
+    miniLgp3.fol.addTerminalRule("(on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)"); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
+    miniLgp3.displayBound = rai::BD_seqPath;
+    miniLgp3.verbose = 2;
+    miniLgp3.fol.writePDDLfiles("z");
+    rai::LGP_Node* root2  = nullptr;
+    rai::LGP_NodeL deneme = miniLgp3.runPartial(1000000, root2);
+
     MiniLGP miniLgp2(C, "fol-pnp-switch.g");
     miniLgp2.fol.addTerminalRule("(on dining_goal obj0) (on dining_goal obj1) (on dining_goal obj2) (on dining_goal obj3)"); //It placed an object that is not specified in the terminal rule just because it is specified in the action predicates.
     miniLgp2.displayBound = rai::BD_seqPath;
@@ -154,11 +163,11 @@ int solveMini(int environmentType, const char *terminalRule){
     cout << "******************************************************" << endl;
     cout << *final_list.last()->skeleton << endl;
 
-    //miniLgp2.actuate();
+    miniLgp2.actuate();
 
-    Compare compare(C, C, miniLgp, miniLgp2);
-    compare.compare();
-
+    //Compare compare(C, C, miniLgp3, miniLgp2);
+    //compare.compare();
+    //todo actuate after compare
 
 //    affordableFol.deleteModifiedFile();
 //    GenerateDecisionRule();

@@ -13,11 +13,13 @@ Compare::Compare(rai::Configuration &simpleKin, rai::Configuration &counterfactu
 
 
 rai::LGP_NodeL Compare::compare() {
-    int simpleCount = 0;
-    int counterfactualCount = 0;
+    double simpleCount = 0;
+    double counterfactualCount = 0;
 
-    simpleCount = calculateCost(simpleKin,simplePath);
-    counterfactualCount = calculateCost(counterfactualKin,counterfactualPath);
+    simpleCount = calculateCost(simpleKin, simplePath, false);
+    cout<<"SIMPLE COUNT: "<<simpleCount<<endl;
+    counterfactualCount = calculateCost(counterfactualKin, counterfactualPath, false);
+    cout<<"COUNTERFACTUAL COUNT: "<<counterfactualCount<<endl;
 
     if (simpleCount < counterfactualCount) {
         return simplePath;
@@ -26,28 +28,55 @@ rai::LGP_NodeL Compare::compare() {
     }
 }
 
-int Compare::calculateCost(const rai::Configuration& kin, rai::LGP_NodeL &path) {
-    int cost = 0;
+double Compare::calculateCost(const rai::Configuration &kin, rai::LGP_NodeL &path, bool verbose) {
+    double cost = 0;
     rai::LGP_Node *node = path.last();
 
     while (node->decision) {
         rai::String decisionString;
-        decisionString<< (*node->decision.get());
+        decisionString << (*node->decision.get());
         rai::NodeL objects = node->folDecision->parents;
-        if (decisionString.getSubString(1,5) == "carry" || decisionString.getSubString(1,5) == "place"){
+        if (decisionString.getSubString(1, 5) == "carry" || decisionString.getSubString(1, 5) == "place") {
             rai::Node *object = objects(2);
-            cout<<"OBJECT: "<<*object<<endl;
+            rai::String objectString;
+            objectString << (*object);
+            if (verbose) cout << "OBJECT: " << *object << endl;
+            rai::Frame *objectFrame = kin.getFrame(objectString);
+            arr objectPosition = objectFrame->getPosition();
+            if (verbose) cout << "OBJECT POSITION: " << objectPosition << endl;
+
             rai::Node *target = objects(3);
-            cout<<"TARGET: "<<*target<<endl;
-        }
-        else if (decisionString.getSubString(1,4) == "pick"){
+            rai::String targetString;
+            targetString << (*target);
+            if (verbose) cout << "TARGET: " << *target << endl;
+            rai::Frame *targetFrame = kin.getFrame(targetString);
+            arr targetPosition = targetFrame->getPosition();
+            if (verbose) cout << "TARGET POSITION: " << targetPosition << endl;
+
+            cost += sqrt(pow(objectPosition(0) - targetPosition(0), 2) + pow(objectPosition(1) - targetPosition(1), 2) +
+                         pow(objectPosition(2) - targetPosition(2), 2));
+
+        } else if (decisionString.getSubString(1, 4) == "pick") {
             rai::Node *object = objects(1);
-            cout<<"OBJECT: "<<*object<<endl;
+            rai::String objectString;
+            objectString << (*object);
+            if (verbose) cout << "OBJECT: " << *object << endl;
+            rai::Frame *objectFrame = kin.getFrame(objectString);
+            arr objectPosition = objectFrame->getPosition();
+            if (verbose) cout << "OBJECT POSITION: " << objectPosition << endl;
+
             rai::Node *target = objects(2);
-            cout<<"TARGET: "<<*target<<endl;
-        }
-        else{
-            cout<<"ERROR: UNKNOWN DECISION"<<endl;
+            rai::String targetString;
+            targetString << (*target);
+            if (verbose) cout << "TARGET: " << *target << endl;
+            rai::Frame *targetFrame = kin.getFrame(targetString);
+            arr targetPosition = targetFrame->getPosition();
+            if (verbose) cout << "TARGET POSITION: " << targetPosition << endl;
+
+            cost += sqrt(pow(objectPosition(0) - targetPosition(0), 2) + pow(objectPosition(1) - targetPosition(1), 2) +
+                         pow(objectPosition(2) - targetPosition(2), 2));
+        } else {
+            cout << "ERROR: UNKNOWN DECISION" << endl;
         }
         node = node->parent;
     }
