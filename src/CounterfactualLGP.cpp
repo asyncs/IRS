@@ -1,34 +1,72 @@
-//
-// Created by asy on 27.11.2023.
-//
+// Purpose: Source file for CounterfactualLGP class.
+// Author: Arda Sarp Yenicesu.
+// Date: 2023/12/01
 
-#include "Compare.h"
+#include "CounterfactualLGP.h"
 
-Compare::Compare(rai::Configuration &simpleKin, rai::Configuration &counterfactualKin,
-                 MiniLGP &simpleScenario, MiniLGP &counterfactualScenario)
-        : simpleKin(simpleKin), counterfactualKin(counterfactualKin) {
-    simplePath = simpleScenario.fringe_path;
-    counterfactualPath = counterfactualScenario.fringe_path;
+CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, const char *counterfactualGoal,
+                                     int environmentType) {
+    std::string rootPath = "/home/asy/git/CA-TAMP/";
+    std::string folFile = "fol-pnp-switch.g";
+    std::string testName = "pickAndPlace";
+
+    auto folFilePath = initializeFol(rootPath, testName, folFile);
+    initializeEnvironment(kin, environmentType);
+
+    MiniLGP simpleScenario(kin, folFilePath.c_str());
+    simpleScenario.displayBound = rai::BD_seqPath;
+    simpleScenario.verbose = -2;
+    simpleScenario.fol.writePDDLfiles("z");
+    simpleScenario.fol.addTerminalRule(terminalRule);
+
+    MiniLGP counterfactualSubScenario(kin, folFilePath.c_str());
+    counterfactualSubScenario.verbose = -2;
+    counterfactualSubScenario.fol.addTerminalRule(counterfactualGoal);
+
+    MiniLGP counterfactualScenario(kin, folFilePath.c_str());
+    counterfactualScenario.verbose = -2;
+    counterfactualScenario.fol.addTerminalRule(terminalRule);
+
+    decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType);
+
 }
 
-
-rai::LGP_NodeL Compare::compare() {
+rai::LGP_NodeL
+CounterfactualLGP::decide(rai::Configuration &kin, MiniLGP &simpleScenario, MiniLGP &counterfactualSubScenario,
+                          MiniLGP &counterfactualScenario, int environmentType) {
     double simpleCount = 0;
     double counterfactualCount = 0;
 
-    simpleCount = calculateCost(simpleKin, simplePath, false);
-    cout<<"SIMPLE COUNT: "<<simpleCount<<endl;
-    counterfactualCount = calculateCost(counterfactualKin, counterfactualPath, false);
-    cout<<"COUNTERFACTUAL COUNT: "<<counterfactualCount<<endl;
+    rai::LGP_Node *simpleRoot = nullptr;
+    rai::LGP_NodeL simplePath = simpleScenario.imagine(1000000, simpleRoot);
+
+    rai::LGP_Node *counterfactualSubRoot = nullptr;
+    rai::LGP_NodeL counterfactualSubPath = counterfactualSubScenario.imagine(1000000, counterfactualSubRoot);
+
+    rai::LGP_NodeL counterfactualPath = counterfactualScenario.imagine(1000000, counterfactualSubPath);
+
+    simpleCount = estimateCost(kin, simplePath, false);
+    cout << "SIMPLE COUNT: " << simpleCount << endl;
+    counterfactualCount = estimateCost(kin, counterfactualPath, false);
+    cout << "COUNTERFACTUAL COUNT: " << counterfactualCount << endl;
 
     if (simpleCount < counterfactualCount) {
+        simpleScenario.actuate();
         return simplePath;
     } else {
+        counterfactualScenario.actuate();
         return counterfactualPath;
     }
 }
 
-double Compare::calculateCost(const rai::Configuration &kin, rai::LGP_NodeL &path, bool verbose) {
+void CounterfactualLGP::initializeEnvironment(rai::Configuration &kin, int environmentType) {
+    generateProblemPNP(kin, environmentType);
+    kin.selectJointsByAtt({"base", "armR"});
+    kin.optimizeTree();
+}
+
+
+double CounterfactualLGP::estimateCost(const rai::Configuration &kin, rai::LGP_NodeL &path, bool verbose) {
     double cost = 0;
     rai::LGP_Node *node = path.last();
 
@@ -82,5 +120,3 @@ double Compare::calculateCost(const rai::Configuration &kin, rai::LGP_NodeL &pat
     }
     return cost;
 }
-
-
