@@ -154,6 +154,7 @@ rai::LGP_NodeL MiniLGP::imagine(uint steps, rai::LGP_NodeL &donorPath) {
 }
 
 void MiniLGP::actuate() {
+    initDisplay();
     rai::String cmd = "x";
     execChoice(cmd);
     cout << "AFTER OPTIMIZATION" << endl;

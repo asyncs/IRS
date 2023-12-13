@@ -23,7 +23,7 @@ public:
      * @param environmentType Environment type
      */
     CounterfactualLGP(rai::Configuration &kin, const char *terminalRule,
-                      const char *counterfactualGoal, int environmentType);
+                      const char *counterfactualGoal, int environmentType, int objectCount);
 
     /**
      * @brief This function is used decide whether to use the counterfactual plan or not depending on a displacement heuristic.
@@ -37,13 +37,17 @@ public:
     static rai::LGP_NodeL decide(rai::Configuration &kin, MiniLGP &simpleScenario, MiniLGP &counterfactualSubScenario,
                                  MiniLGP &counterfactualScenario, int environmentType);
 
+    rai::LGP_NodeL decide_uninformed(rai::Configuration &kin, MiniLGP &simpleScenario);
+
+    rai::LGP_NodeL decide_counterfactual(rai::Configuration &kin,MiniLGP &counterfactualSubScenario,
+                          MiniLGP &counterfactualScenario, int environmentType);
 private:
     /**
      * @brief This function is used to initialize the environment
      * @param kin The kinematic world
      * @param environmentType Environment type
      */
-    static void initializeEnvironment(rai::Configuration &kin, int environmentType);
+    static void initializeEnvironment(rai::Configuration &kin, int environmentType, int objectCount);
 
     /**
      * @brief This function is used to estimate the approximate effort to actuate each plan based on total displacement heuristic.

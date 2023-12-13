@@ -20,7 +20,7 @@
  * @param kin The kinematic world
  * @param environmentType The type of the environment
  */
-bool generateProblemPNP(rai::Configuration &C, int environmentType);
+bool generateProblemPNP(rai::Configuration &C, int environmentType, int numObj);
 /**
  * @brief This function is used for initializing the first order logic file
  * @param rootPath Root path of the project
@@ -28,6 +28,6 @@ bool generateProblemPNP(rai::Configuration &C, int environmentType);
  * @param folFileName Any first order logic file name, e.g. fol-pnp-switch.g
  * @return
  */
-std::string initializeFol(const std::string& rootPath, const std::string& testName,const std::string& folFileName);
+std::string initializeFol(const std::string& rootPath, const std::string& testName,const std::string& folFileName, int targetCount);
 
 #endif //CA_TAMP_UTILS_H

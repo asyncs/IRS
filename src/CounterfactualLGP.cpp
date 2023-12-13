@@ -5,13 +5,15 @@
 #include "CounterfactualLGP.h"
 
 CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, const char *counterfactualGoal,
-                                     int environmentType) {
+                                     int environmentType, int objectCount) {
     std::string rootPath = "/home/asy/git/CA-TAMP/";
     std::string folFile = "fol-pnp-switch.g";
+    std::string folFileS = "fol-pnp-switch-S.g";
     std::string testName = "pickAndPlace";
 
-    auto folFilePath = initializeFol(rootPath, testName, folFile);
-    initializeEnvironment(kin, environmentType);
+    auto folFilePath = initializeFol(rootPath, testName, folFile, objectCount);
+    auto folFilePathS = initializeFol(rootPath, testName, folFileS, 0);
+    initializeEnvironment(kin, environmentType, objectCount);
 
     MiniLGP simpleScenario(kin, folFilePath.c_str());
     simpleScenario.displayBound = rai::BD_seqPath;
@@ -19,7 +21,7 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     simpleScenario.fol.writePDDLfiles("z");
     simpleScenario.fol.addTerminalRule(terminalRule);
 
-    MiniLGP counterfactualSubScenario(kin, folFilePath.c_str());
+    MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
     counterfactualSubScenario.verbose = -2;
     counterfactualSubScenario.fol.addTerminalRule(counterfactualGoal);
 
@@ -27,8 +29,9 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     counterfactualScenario.verbose = -2;
     counterfactualScenario.fol.addTerminalRule(terminalRule);
 
-    decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType);
-
+    //decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType);
+    //decide_counterfactual(kin, counterfactualSubScenario, counterfactualScenario, environmentType);
+    decide_uninformed(kin, simpleScenario);
 }
 
 rai::LGP_NodeL
@@ -62,8 +65,31 @@ CounterfactualLGP::decide(rai::Configuration &kin, MiniLGP &simpleScenario, Mini
     }
 }
 
-void CounterfactualLGP::initializeEnvironment(rai::Configuration &kin, int environmentType) {
-    generateProblemPNP(kin, environmentType);
+rai::LGP_NodeL CounterfactualLGP::decide_uninformed(rai::Configuration &kin, MiniLGP &simpleScenario) {
+    double simpleCount = 0;
+    rai::LGP_Node *simpleRoot = nullptr;
+    rai::LGP_NodeL simplePath = simpleScenario.imagine(1000000, simpleRoot);
+    simpleCount = estimateCost(kin, simplePath, false);
+    cout << "SIMPLE COUNT: " << simpleCount << endl;
+    simpleScenario.actuate();
+//    simpleScenario.renderToVideo();
+    return simplePath;
+}
+
+rai::LGP_NodeL CounterfactualLGP::decide_counterfactual(rai::Configuration &kin, MiniLGP &counterfactualSubScenario,
+                                                        MiniLGP &counterfactualScenario, int environmentType) {
+    double counterfactualCount = 0;
+    rai::LGP_Node *counterfactualSubRoot = nullptr;
+    rai::LGP_NodeL counterfactualSubPath = counterfactualSubScenario.imagine(1000000, counterfactualSubRoot);
+    rai::LGP_NodeL counterfactualPath = counterfactualScenario.imagine(1000000, counterfactualSubPath);
+    counterfactualCount = estimateCost(kin, counterfactualPath, false);
+    cout << "COUNTERFACTUAL COUNT: " << counterfactualCount << endl;
+    counterfactualScenario.actuate();
+    return counterfactualPath;
+}
+
+void CounterfactualLGP::initializeEnvironment(rai::Configuration &kin, int environmentType, int objectCount) {
+    generateProblemPNP(kin, environmentType, objectCount);
     kin.selectJointsByAtt({"base", "armR"});
     kin.optimizeTree();
 }
@@ -72,7 +98,7 @@ void CounterfactualLGP::initializeEnvironment(rai::Configuration &kin, int envir
 double CounterfactualLGP::estimateCost(const rai::Configuration &kin, rai::LGP_NodeL &path, bool verbose) {
     double cost = 0;
     rai::LGP_Node *node = path.last();
-
+    arr robotPosition = kin.getFrame("pr2R")->getPosition();
     while (node->decision) {
         rai::String decisionString;
         decisionString << (*node->decision.get());
@@ -101,21 +127,29 @@ double CounterfactualLGP::estimateCost(const rai::Configuration &kin, rai::LGP_N
             rai::Node *object = objects(1);
             rai::String objectString;
             objectString << (*object);
-            if (verbose) cout << "OBJECT: " << *object << endl;
-            rai::Frame *objectFrame = kin.getFrame(objectString);
-            arr objectPosition = objectFrame->getPosition();
-            if (verbose) cout << "OBJECT POSITION: " << objectPosition << endl;
+            if (verbose) {
+                cout << "ROBOT: " << *object << endl;
+            }
+            if (verbose) cout << "ROBOT POSITION: " << robotPosition << endl;
 
             rai::Node *target = objects(2);
             rai::String targetString;
             targetString << (*target);
-            if (verbose) cout << "TARGET: " << *target << endl;
+            if (verbose) {
+                cout << "TARGET: " << *target << endl;
+            }
             rai::Frame *targetFrame = kin.getFrame(targetString);
             arr targetPosition = targetFrame->getPosition();
             if (verbose) cout << "TARGET POSITION: " << targetPosition << endl;
 
-            cost += sqrt(pow(objectPosition(0) - targetPosition(0), 2) + pow(objectPosition(1) - targetPosition(1), 2) +
-                         pow(objectPosition(2) - targetPosition(2), 2));
+            double stepCost = sqrt(pow(robotPosition(0) - targetPosition(0), 2) + pow(robotPosition(1) - targetPosition(1), 2) +
+                         pow(robotPosition(2) - targetPosition(2), 2));
+
+            cost += stepCost;
+            robotPosition = targetPosition;
+            if (verbose) cout << "STEP COST: " << stepCost << endl;
+
+
         } else {
             cout << "ERROR: UNKNOWN DECISION" << endl;
         }
@@ -123,3 +157,4 @@ double CounterfactualLGP::estimateCost(const rai::Configuration &kin, rai::LGP_N
     }
     return cost;
 }
+
