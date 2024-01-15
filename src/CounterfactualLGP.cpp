@@ -29,9 +29,7 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     counterfactualScenario.verbose = -2;
     counterfactualScenario.fol.addTerminalRule(terminalRule);
 
-    //decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType);
-    //decide_counterfactual(kin, counterfactualSubScenario, counterfactualScenario, environmentType);
-    decide_uninformed(kin, simpleScenario);
+    decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType);
 }
 
 rai::LGP_NodeL

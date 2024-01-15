@@ -31,7 +31,6 @@ bool generateProblemPNP(rai::Configuration &C, int environmentType, int numObj) 
                 f->setRelativeQuaternion(rai::Quaternion(0).addZ(rnd.uni(-RAI_PI, RAI_PI)).getArr4d());
             }
         }
-        C.view();
         C.stepFcl();
         arr y, J;
         C.kinematicsPenetration(y, J);
