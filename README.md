@@ -8,18 +8,21 @@ Task and Motion Planning (TAMP) in robotics faces the challenge of synthesizing 
 ## Requirments
 Assumes a standard Ubuntu 20.04 (or 18.04) machine.
 ## Quick Start
-* git clone https://github.com/asyncs/CA-TAMP.git
+``` git clone https://github.com/asyncs/CA-TAMP.git ```
 ### Build the RAI submodule.
-* cd CA-TAMP/rai
-* make -j1 printUbuntuAll
-* make -j1 installUbuntuAll APTGETYES=--yes
-* make -j4
-* make -j4 tests bin
-* make runTests
-
+```
+cd CA-TAMP/rai
+make -j1 printUbuntuAll
+make -j1 installUbuntuAll APTGETYES=--yes
+make -j4
+make -j4 tests bin
+make runTests
+```
 ### Build the CA-TAMP.
-* cd ..
-* mkdir build && cd build
-* cmake ..
-* cmake --build .
-* make
+```
+cd ..
+mkdir build && cd build
+cmake ..
+cmake --build .
+make
+```
