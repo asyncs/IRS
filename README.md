@@ -10,13 +10,17 @@ Assumes a standard Ubuntu 20.04 (or 18.04) machine.
 ## Quick Start
 * git clone [CA-TAMP](https://github.com/asyncs/CA-TAMP.git)
 * cd CA-TAMP/rai
-Dependencies for the RAI submodule.
+
+###Dependencies for the RAI submodule.
+
 * make -j1 printUbuntuAll
 * make -j1 installUbuntuAll APTGETYES=--yes
 * make -j4
 * make -j4 tests bin
 * make runTests
-Dependencies for the CA-TAMP.
+
+###Dependencies for the CA-TAMP.
+
 * cd ..
 * mkdir build && cd build
 * cmake ..
