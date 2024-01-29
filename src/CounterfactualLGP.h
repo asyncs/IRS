@@ -22,8 +22,7 @@ public:
      * @param counterfactualGoal Terminal rule for the counterfactual sub-goal
      * @param environmentType Environment type
      */
-    CounterfactualLGP(rai::Configuration &kin, const char *terminalRule,
-                      const char *counterfactualGoal, int environmentType, int objectCount);
+    CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, int environmentType, int objectCount);
 
     /**
      * @brief This function is used decide whether to use the counterfactual plan or not depending on a displacement heuristic.

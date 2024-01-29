@@ -4,8 +4,7 @@
 
 #include "CounterfactualLGP.h"
 
-CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, const char *counterfactualGoal,
-                                     int environmentType, int objectCount) {
+CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, int environmentType, int objectCount) {
     std::string rootPath = "/home/asy/git/CA-TAMP/";
     std::string folFile = "fol-pnp-switch.g";
     std::string folFileS = "fol-pnp-switch-S.g";
@@ -14,7 +13,6 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     auto folFilePath = initializeFol(rootPath, testName, folFile, objectCount);
     auto folFilePathS = initializeFol(rootPath, testName, folFileS, 0);
     initializeEnvironment(kin, environmentType, objectCount);
-
     MiniLGP simpleScenario(kin, folFilePath.c_str());
     simpleScenario.displayBound = rai::BD_seqPath;
     simpleScenario.verbose = -2;
@@ -23,7 +21,8 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
 
     MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
     counterfactualSubScenario.verbose = -2;
-    counterfactualSubScenario.fol.addTerminalRule(counterfactualGoal);
+    auto capacityRuleString = capacityRule(objectCount);
+    counterfactualSubScenario.fol.addTerminalRule(capacityRuleString.c_str());
 
     MiniLGP counterfactualScenario(kin, folFilePath.c_str());
     counterfactualScenario.verbose = -2;
