@@ -1,5 +1,5 @@
 /cmake-build-debug/
 /.idea
 z.*
-/test/pickAndPlace/optLGP.dat
+/test/serving/optLGP.dat
 *.mkv

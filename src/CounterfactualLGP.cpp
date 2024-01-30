@@ -8,7 +8,7 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     std::string rootPath = "/home/asy/git/CA-TAMP/";
     std::string folFile = "fol-pnp-switch.g";
     std::string folFileS = "fol-pnp-switch-S.g";
-    std::string testName = "pickAndPlace";
+    std::string testName = "serving";
 
     auto folFilePath = initializeFol(rootPath, testName, folFile, objectCount);
     auto folFilePathS = initializeFol(rootPath, testName, folFileS, 0);

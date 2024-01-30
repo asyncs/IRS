@@ -24,7 +24,7 @@ bool generateProblemPNP(rai::Configuration &C, int environmentType, int numObj);
 /**
  * @brief This function is used for initializing the first order logic file
  * @param rootPath Root path of the project
- * @param testName Test name, e.g. pickAndPlace
+ * @param testName Test name, e.g. serving
  * @param folFileName Any first order logic file name, e.g. fol-pnp-switch.g
  */
 std::string initializeFol(const std::string& rootPath, const std::string& testName,const std::string& folFileName, int targetCount);

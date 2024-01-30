@@ -170,7 +170,7 @@ target_link_libraries(meshTool rai)
 
 # Removed the bot executable related to botop
 
-add_executable(pickandplace test/pickAndPlace/main.cpp
+add_executable(serving test/serving/main.cpp
         src/GenericFolFile.cpp
         src/GenericFolFile.h
         src/GenerateDecisionRule.cpp
@@ -182,7 +182,7 @@ add_executable(pickandplace test/pickAndPlace/main.cpp
         src/Utils.cpp
         src/Utils.h
 )
-target_link_libraries(pickandplace rai)
+target_link_libraries(serving rai)
 
 ################################################################################
 
@@ -194,7 +194,7 @@ install(
         COMPONENT pkgconfig)
 
 install(
-        TARGETS kinEdit meshTool pickandplace
+        TARGETS kinEdit meshTool serving
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # [Rest of your CMake file below]

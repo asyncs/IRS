@@ -17,16 +17,16 @@ bool generateProblemPNP(rai::Configuration &C, int environmentType, int numObj) 
         C.addFile("../../models/scenes/kitchen_room.g");
         double x_cor = -0.4;
         double y_cor = -0.8;
-        for (uint i = 0; i < numObj; i++) {
+        for (int i = 0; i < numObj; i++) {
             rai::Frame *f = C.addFrame(STRING("obj" << i), "kitchen_counter",
                                        "type:ssBox size:[.08 .08 .15 .05] color:[1. 0. 0.], contact, logical={ object }, joint:rigid");
             if ( i % 2 == 0){
-                x_cor += 0.17;
+                x_cor += 0.15;
                 f->setRelativePosition({x_cor, y_cor+0.15, .15});
                 f->setRelativeQuaternion(rai::Quaternion(0).addZ(rnd.uni(-RAI_PI, RAI_PI)).getArr4d());
             }
             else{
-                y_cor -= 0.13;
+                y_cor -= 0.15;
                 f->setRelativePosition({x_cor-0.15, y_cor, .15});
                 f->setRelativeQuaternion(rai::Quaternion(0).addZ(rnd.uni(-RAI_PI, RAI_PI)).getArr4d());
             }
@@ -93,19 +93,19 @@ std::string problem(int objectCount, int environmentType) {
     if (environmentType == 1) {
         std::string terminal = "(on kitchen_counter_goal obj0) ";
         for(int i = 1; i < objectCount; i++){
-            terminal += "(on tray obj" + std::to_string(i) + ") ";
+            terminal += "(on kitchen_counter_goal obj" + std::to_string(i) + ") ";
         }
         return terminal;
     } else if (environmentType == 2) {
         std::string terminal = "(on kitchen_goal obj0) ";
         for(int i = 1; i < objectCount; i++){
-            terminal += "(on tray obj" + std::to_string(i) + ") ";
+            terminal += "(on kitchen_goal obj" + std::to_string(i) + ") ";
         }
         return terminal;
     } else if (environmentType == 3) {
         std::string terminal = "(on dining_goal obj0) ";
         for(int i = 1; i < objectCount; i++){
-            terminal += "(on tray obj" + std::to_string(i) + ") ";
+            terminal += "(on dining_goal obj" + std::to_string(i) + ") ";
         }
         return terminal;
     }

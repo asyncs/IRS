@@ -6,7 +6,7 @@
 #include "../../src/Utils.h"
 
 int MAIN(int argc, char **argv) {
-    int environmentType = 1; // 1: kitchen_counter, 2: kitchen_table, 3: dining_table
+    int environmentType = 3; // 1: kitchen_counter, 2: kitchen_table, 3: dining_table
     int objectCount = 3; // Number of objects to be transported
     int totalObjectCount = 3; // Total number of objects in the environment
     std::string terminalRule = problem(objectCount, environmentType);
