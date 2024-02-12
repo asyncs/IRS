@@ -36,7 +36,7 @@ CounterfactualLGP::decide(rai::Configuration &kin, MiniLGP &simpleScenario, Mini
                           MiniLGP &counterfactualScenario, int environmentType) {
     double simpleCount = 0;
     double counterfactualCount = 0;
-    double ace = 0;
+    double ett = 0;
 
     rai::LGP_Node *simpleRoot = nullptr;
     rai::LGP_NodeL simplePath = simpleScenario.imagine(1000000, simpleRoot);
@@ -50,10 +50,10 @@ CounterfactualLGP::decide(rai::Configuration &kin, MiniLGP &simpleScenario, Mini
     cout << "SIMPLE COUNT: " << simpleCount << endl;
     counterfactualCount = estimateCost(kin, counterfactualPath, false);
     cout << "COUNTERFACTUAL COUNT: " << counterfactualCount << endl;
-    ace = simpleCount - counterfactualCount;
-    cout << "AVERAGE CAUSAL EFFECT:" << ace << endl;
+    ett = counterfactualCount - simpleCount;
+    cout << "ETT:" << ett << endl;
 
-    if (ace < 0) {
+    if (ett >= 0) {
         simpleScenario.actuate();
         return simplePath;
     } else {
