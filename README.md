@@ -39,6 +39,6 @@ make
 
 To understand how CA-TAMP operates, set the environment and task parameters in `test/main.cpp`, build the executable, and then run the provided script.
 ``` 
-cd test/serving
+cd ../test/serving
 ./../../build/serving 
 ```
