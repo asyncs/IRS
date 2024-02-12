@@ -37,7 +37,7 @@ make
   <img src="https://github.com/asyncs/CA-TAMP/assets/40043682/b37f07c6-c0a1-46b1-a790-ba3cd2acf074" width="500" />
 </p>
 
-To understand how CA-TAMP operates, set the environment and task parameters in `test/main.cpp`, build the executable, and then run the provided script.
+To understand how CA-TAMP operates, set the environment and task parameters in `test/serving/main.cpp`, build the executable, and then run the provided script.
 ``` 
 cd ../test/serving
 ./../../build/serving 
