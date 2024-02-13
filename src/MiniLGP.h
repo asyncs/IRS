@@ -51,9 +51,9 @@ public:
      */
     rai::LGP_NodeL imagine(uint steps, rai::LGP_NodeL &donorPath);
     /**
-     * @brief This function actualize the path found by task planning by solving the sequencePath bound and displaying the result
+     * @brief This function realize the path found by task planning by solving the sequencePath bound and displaying the result
      */
-    void actuate();
+    void commit();
 };
 
 #endif //CA_TAMP_MINILGP_H

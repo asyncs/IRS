@@ -49,7 +49,7 @@ private:
     static void initializeEnvironment(rai::Configuration &kin, int environmentType, int objectCount);
 
     /**
-     * @brief This function is used to estimate the approximate effort to actuate each plan based on total displacement heuristic.
+     * @brief This function is used to estimate the approximate effort to commit each plan based on total displacement.
      * @param kin The kinematic world
      * @param path High level task plan
      * @param verbose Verbosity flag

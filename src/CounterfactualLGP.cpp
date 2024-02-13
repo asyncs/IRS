@@ -54,10 +54,10 @@ CounterfactualLGP::decide(rai::Configuration &kin, MiniLGP &simpleScenario, Mini
     cout << "ETT:" << ett << endl;
 
     if (ett >= 0) {
-        simpleScenario.actuate();
+        simpleScenario.commit();
         return simplePath;
     } else {
-        counterfactualScenario.actuate();
+        counterfactualScenario.commit();
         return counterfactualPath;
     }
 }
@@ -68,7 +68,7 @@ rai::LGP_NodeL CounterfactualLGP::decide_uninformed(rai::Configuration &kin, Min
     rai::LGP_NodeL simplePath = simpleScenario.imagine(1000000, simpleRoot);
     simpleCount = estimateCost(kin, simplePath, false);
     cout << "SIMPLE COUNT: " << simpleCount << endl;
-    simpleScenario.actuate();
+    simpleScenario.commit();
 //    simpleScenario.renderToVideo();
     return simplePath;
 }
@@ -81,7 +81,7 @@ rai::LGP_NodeL CounterfactualLGP::decide_counterfactual(rai::Configuration &kin,
     rai::LGP_NodeL counterfactualPath = counterfactualScenario.imagine(1000000, counterfactualSubPath);
     counterfactualCount = estimateCost(kin, counterfactualPath, false);
     cout << "COUNTERFACTUAL COUNT: " << counterfactualCount << endl;
-    counterfactualScenario.actuate();
+    counterfactualScenario.commit();
     return counterfactualPath;
 }
 

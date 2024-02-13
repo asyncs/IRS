@@ -153,7 +153,7 @@ rai::LGP_NodeL MiniLGP::imagine(uint steps, rai::LGP_NodeL &donorPath) {
     return fringe_path;
 }
 
-void MiniLGP::actuate() {
+void MiniLGP::commit() {
     initDisplay();
     rai::String cmd = "x";
     execChoice(cmd);
