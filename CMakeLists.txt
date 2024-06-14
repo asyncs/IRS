@@ -1,21 +1,23 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 
 project(CA-TAMP)
 
-## first time call: generate unity sources
 if(NOT DEFINED CMAKE_CACHE_MAJOR_VERSION)
   execute_process(COMMAND make -j1 -C ${CMAKE_CURRENT_SOURCE_DIR}/rai unityAll)
 endif()
 
-## variable default values
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ version selection")
-set(PYBIND11_PYTHON_VERSION 3.8 CACHE STRING "python version")
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ version selection") # Update this line to use C++17
+find_package(Python REQUIRED)
+
+set(PYBIND11_FINDPYTHON ON)
+find_package(pybind11 REQUIRED)
+set(PYBIND11_PYTHON_VERSION 3.10 CACHE STRING "python version")
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local" CACHE PATH "..." FORCE)
 endif()
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-## options
 option(USE_PYBIND "build python bindings" ON)
 option(USE_BULLET "link to bullet" OFF)
 option(USE_PHYSX "link to physx" ON)
@@ -24,10 +26,9 @@ option(USE_REALSENSE "link to realsense2 driver library" OFF)
 option(USE_LIBFRANKA "link to libfranka" OFF)
 option(USE_PCL "link to pcl library" OFF)
 
-## compile options
 add_compile_options(
         -O3 -g -Wall -Wpedantic -fPIC
-        $<$<COMPILE_LANGUAGE:CXX>:-std=c++14>
+        $<$<COMPILE_LANGUAGE:CXX>:-std=c++17> # Update this line to use C++17
         $<$<COMPILE_LANGUAGE:CXX>:-Wno-terminate>
 )
 
@@ -86,11 +87,7 @@ target_link_libraries(rai
 )
 
 ################################################################################
-#
-# include external libraries
 
-#find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-#target_link_libraries (rai Eigen3::Eigen)
 find_package(PkgConfig REQUIRED)
 
 if(USE_BULLET)
@@ -148,27 +145,20 @@ if(USE_PYBIND)
   add_definitions(-DRAI_PYBIND)
   include_directories(${pybind11_INCLUDE_DIRS})
 
-  # Removed _robotic module creation
 endif()
 
 ################################################################################
-#
-# verbosity: info on eventual compiler flags
 
 get_property(_defs DIRECTORY PROPERTY COMPILE_DEFINITIONS)
 message(STATUS "[rai] compiler flags: " "${_defs}")
 
 ################################################################################
 
-# Removed add_custom_target related to _robotic
-
 add_executable(kinEdit rai/bin/src_kinEdit/main.cpp)
 target_link_libraries(kinEdit rai)
 
 add_executable(meshTool rai/bin/src_meshTool/main.cpp)
 target_link_libraries(meshTool rai)
-
-# Removed the bot executable related to botop
 
 add_executable(serving test/serving/main.cpp
         src/GenericFolFile.cpp
@@ -184,9 +174,21 @@ add_executable(serving test/serving/main.cpp
 )
 target_link_libraries(serving rai)
 
-################################################################################
+add_executable(pouring test/pouring/main.cpp
+        src/GenericFolFile.cpp
+        src/GenericFolFile.h
+        src/GenerateDecisionRule.cpp
+        src/GenerateDecisionRule.h
+        src/MiniLGP.cpp
+        src/MiniLGP.h
+        src/CounterfactualLGP.cpp
+        src/CounterfactualLGP.h
+        src/Utils.cpp
+        src/Utils.h
+)
+target_link_libraries(pouring rai)
 
-# [Installation and other commands here, as needed, without botop references]
+################################################################################
 
 install(
         TARGETS rai
@@ -194,7 +196,5 @@ install(
         COMPONENT pkgconfig)
 
 install(
-        TARGETS kinEdit meshTool serving
+        TARGETS kinEdit meshTool serving pouring
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-
-# [Rest of your CMake file below]

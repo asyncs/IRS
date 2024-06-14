@@ -1,9 +1,5 @@
-// Purpose: Header file for MiniLGP class.
-// Author: Arda Sarp Yenicesu.
-// Date: 2023/11/21
-
 #include "MiniLGP.h"
-
+#include <iostream>
 
 void MiniLGP::nodeSurgery(rai::LGP_Node *donorNode) {
     if (donorNode == nullptr) {
@@ -13,62 +9,57 @@ void MiniLGP::nodeSurgery(rai::LGP_Node *donorNode) {
     fringe_pose.append(donorNode);
 }
 
-void MiniLGP::pathSurgery(rai::LGP_NodeL &donorPath, bool verbose) {
+void MiniLGP::pathSurgery(const rai::LGP_NodeL &donorPath, const bool verbose) {
     rai::LGP_NodeL decisions;
     if (verbose) {
-        cout << "INIT WITH LIST" << endl;
-        cout << "" << endl;
-        cout << "" << endl;
+        std::cout << "INIT WITH LIST" << std::endl;
     }
-
 
     rai::LGP_Node *node = donorPath.last();
     if (verbose) {
-        cout << "LAST NODE: " << node->getTreePathString() << endl;
-        cout << "" << endl;
-        cout << "" << endl;
+        std::cout << "LAST NODE: " << node->getTreePathString() << std::endl;
     }
 
-
-    for (; node;) {
+    while (node) {
         if (verbose) {
-            cout << "REMAINING: " << node->getTreePathString() << endl;
-            cout << "" << endl;
+            std::cout << "REMAINING: " << node->getTreePathString() << std::endl;
         }
 
-
         if (node->decision) {
-            if (verbose) cout << "DECISION: " << *node->decision << endl;
+            if (verbose) std::cout << "DECISION: " << *node->decision << std::endl;
             decisions.prepend(node);
-            if (verbose) cout << "DECISIONS: " << decisions.last()->getTreePathString() << endl;
+            if (verbose) std::cout << "DECISIONS: " << decisions.last()->getTreePathString() << std::endl;
         } else {
-            if (verbose) cout << "DECISION: EMPTY ROOT NODE" << endl;
+            if (verbose) std::cout << "DECISION: EMPTY ROOT NODE" << std::endl;
             decisions.append(node);
         }
         node = node->parent;
-        if (verbose) cout << "" << endl;
+        if (verbose) std::cout << std::endl;
     }
-    if (verbose) cout << "INITIALIZED" << endl;
+    if (verbose) std::cout << "INITIALIZED" << std::endl;
+
     fringe_pose.append(root);
     root->expand();
-    if (verbose) cout << "ROOT EXPANDED" << endl;
+    if (verbose) std::cout << "ROOT EXPANDED" << std::endl;
 
-    if (verbose) cout << "DECISIONS SIZE: " << decisions.N << endl;
+    if (verbose) std::cout << "DECISIONS SIZE: " << decisions.N << std::endl;
+
     while (decisions.N > 1) {
-        rai::LGP_Node *decisionNode = decisions.popFirst();
+        const rai::LGP_Node *decisionNode = decisions.popFirst();
         if (verbose) {
-            cout << "DECISIONS SIZE: " << decisions.N << endl;
-            cout << "POPPED DECISION NODE: " << *decisionNode->decision << endl;
-            cout << "FOCUS NODE: " << focusNode->getTreePathString() << endl;
+            std::cout << "DECISIONS SIZE: " << decisions.N << std::endl;
+            std::cout << "POPPED DECISION NODE: " << *decisionNode->decision << std::endl;
+            std::cout << "FOCUS NODE: " << focusNode->getTreePathString() << std::endl;
         }
 
         rai::String decisionString;
         decisionString << (*decisionNode->decision.get());
+
         if (decisionNode->decision) {
-            for (rai::LGP_Node *possibleChildren: focusNode->children) {
+            for (rai::LGP_Node *possibleChildren : focusNode->children) {
                 if (verbose) {
-                    cout << "POSSIBLE CHILDREN: " << *possibleChildren->decision << endl;
-                    cout << "DECISION NODE: " << *decisionNode->decision << endl;
+                    std::cout << "POSSIBLE CHILDREN: " << *possibleChildren->decision << std::endl;
+                    std::cout << "DECISION NODE: " << *decisionNode->decision << std::endl;
                 }
 
                 if (focusNode->count(1)) {
@@ -78,26 +69,27 @@ void MiniLGP::pathSurgery(rai::LGP_NodeL &donorPath, bool verbose) {
                 rai::String decisionChildrenString;
                 decisionChildrenString << (*possibleChildren->decision.get());
                 if (decisionString == decisionChildrenString) {
-                    if (verbose) cout << "FOUND CHILDREN: " << *possibleChildren->decision << endl;
+                    if (verbose) std::cout << "FOUND CHILDREN: " << *possibleChildren->decision << std::endl;
                     focusNode = possibleChildren;
                     if (!focusNode->isExpanded && decisions.N > 1) {
                         focusNode->expand();
                     } else {
-                        if (verbose) cout << "NODE ALREADY EXPANDED" << endl;
+                        if (verbose) std::cout << "NODE ALREADY EXPANDED" << std::endl;
                         fringe_expand.append(focusNode);
-                        if (verbose) cout << "NODE ADDED TO EXPAND FRINGE" << *focusNode->decision << endl;
+                        if (verbose) std::cout << "NODE ADDED TO EXPAND FRINGE: " << *focusNode->decision << std::endl;
                     }
                     break;
                 }
             }
         }
     }
+
     if (verbose) {
-        cout << "FOCUS NODE: " << *focusNode->decision << endl;
-        cout << "FRINGE EXPAND CONTAINS: " << fringe_expand.N << " NODES" << endl;
-        cout << "FRINGE EXPAND CONTAINS: " << *fringe_expand.last()->decision << endl;
-        cout << "FOCUS NODE PATH: " << focusNode->getTreePathString() << endl;
-        cout << "FOCUS NODE STATE: " << *focusNode << endl;
+        std::cout << "FOCUS NODE: " << *focusNode->decision << std::endl;
+        std::cout << "FRINGE EXPAND CONTAINS: " << fringe_expand.N << " NODES" << std::endl;
+        std::cout << "FRINGE EXPAND CONTAINS: " << *fringe_expand.last()->decision << std::endl;
+        std::cout << "FOCUS NODE PATH: " << focusNode->getTreePathString() << std::endl;
+        std::cout << "FOCUS NODE STATE: " << *focusNode << std::endl;
     }
 }
 
@@ -106,8 +98,9 @@ void MiniLGP::stepPartial() {
 
     optFirstOnLevel(rai::BD_pose, fringe_poseToGoal, &fringe_seq);
     optBestOnLevel(rai::BD_seq, fringe_seq, rai::BD_pose, &fringe_path, nullptr);
+
     if (fringe_path.N) {
-        cout << "EVALUATING PATH " << fringe_path.last()->getTreePathString() << endl;
+        std::cout << "EVALUATING PATH " << fringe_path.last()->getTreePathString() << std::endl;
     }
 
     clearFromInfeasibles(fringe_expand);
@@ -117,37 +110,30 @@ void MiniLGP::stepPartial() {
     clearFromInfeasibles(fringe_path);
     clearFromInfeasibles(terminals);
 
-
     numSteps++;
 }
 
-rai::LGP_NodeL MiniLGP::imagine(uint steps, rai::LGP_Node *donorNode) {
+rai::LGP_NodeL MiniLGP::imagine(const uint steps, rai::LGP_Node *donorNode) {
     nodeSurgery(donorNode);
-
-    uint stopPath = 1;
-    double stopTime = 400.;
 
     for (uint k = 0; k < steps; k++) {
         stepPartial();
 
-        if (fringe_path.N >= stopPath) break;
-        if (COUNT_time > stopTime) break;
+        if (constexpr uint stopPath = 1; fringe_path.N >= stopPath) break;
+        if (constexpr double stopTime = 400.; COUNT_time > stopTime) break;
     }
     init();
     return fringe_path;
 }
 
-rai::LGP_NodeL MiniLGP::imagine(uint steps, rai::LGP_NodeL &donorPath) {
+rai::LGP_NodeL MiniLGP::imagine(const uint steps, const rai::LGP_NodeL &donorPath) {
     pathSurgery(donorPath, false);
-
-    uint stopPath = 1;
-    double stopTime = 400.;
 
     for (uint k = 0; k < steps; k++) {
         stepPartial();
 
-        if (fringe_path.N >= stopPath) break;
-        if (COUNT_time > stopTime) break;
+        if (constexpr uint stopPath = 1; fringe_path.N >= stopPath) break;
+        if (constexpr double stopTime = 400.; COUNT_time > stopTime) break;
     }
 
     return fringe_path;
@@ -157,6 +143,6 @@ void MiniLGP::commit() {
     initDisplay();
     rai::String cmd = "x";
     execChoice(cmd);
-    cout << "AFTER OPTIMIZATION" << endl;
-    cout << *fringe_path.last() << endl;
+    std::cout << "AFTER OPTIMIZATION" << std::endl;
+    std::cout << *fringe_path.last() << std::endl;
 }

@@ -1,19 +1,33 @@
 #include <Kin/kin.h>
 #include <Core/graph.h>
-#include <LGP/LGP_tree.h>
-#include "../../src/MiniLGP.h"
 #include "../../src/CounterfactualLGP.h"
 #include "../../src/Utils.h"
 
-int MAIN(int argc, char **argv) {
-    int environmentType = 3; // 1: kitchen_counter, 2: kitchen_table, 3: dining_table
-    int objectCount = 3; // Number of objects to be transported
-    int totalObjectCount = 3; // Total number of objects in the environment
-    std::string terminalRule = problem(objectCount, environmentType);
+int main(const int argc, char **argv) {
+    try {
+        constexpr int environmentType = 3;
+        constexpr int objectCount = 5;
+        constexpr int totalObjectCount = 5;
+        constexpr int verbosity = 0;
 
-    rai::initCmdLine(argc, argv);
-    rai::Configuration C;
-    CounterfactualLGP counterfactualLGP(C, terminalRule.c_str(),environmentType, totalObjectCount);
-    return 0;
+        const std::string terminalRule = utils::problem(objectCount, environmentType);
+
+        rai::initCmdLine(argc, argv);
+
+        rai::Configuration C;
+        if (!utils::generateProblemPNP(C, environmentType, totalObjectCount)) {
+            std::cerr << "Failed to generate problem PNP" << std::endl;
+            return EXIT_FAILURE;
+        }
+
+        CounterfactualLGP counterfactualLGP(C, terminalRule.c_str(), environmentType, totalObjectCount, verbosity);
+
+        return EXIT_SUCCESS;
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    } catch (...) {
+        std::cerr << "Unknown error occurred" << std::endl;
+        return EXIT_FAILURE;
+    }
 }
-

@@ -69,11 +69,11 @@ DecisionRule place {
 #####################################################################
 
 DecisionRule carryTransportAffordable {
-  X, Y, Z, O1, O2, O3, O4, O5,
-  { (picked X Y) (table Z) (held Y) (on Y O1) (on Y O2) (on Y O3) (on Y O4) (on Y O5) }
+  X, Y, Z, O1, O2, O3,
+  { (picked X Y) (table Z) (held Y) (on Y O1) (on Y O2) (on Y O3)}
   { (picked X Y)! (busy X)! (busy Y)! (held Y)! # logic only
     (stable ANY Y)! (touch X Y)! # NLP predicates
-    (on Z Y) (above Y Z) (stableOn Z Y) tmp(touch X Y) tmp(touch Y Z) (on Z O1) (on Z O2) (on Z O3) (on Z O4) (on Z O5)
+    (on Z Y) (above Y Z) (stableOn Z Y) tmp(touch X Y) tmp(touch Y Z) (on Z O1) (on Z O2) (on Z O3)
     }
 }
 
