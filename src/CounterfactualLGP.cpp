@@ -1,27 +1,26 @@
 #include "CounterfactualLGP.h"
 #include <iostream>
 
-CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, const int environmentType, const int objectCount, const int verbosity) {
+CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, const int environmentType, const int objectCount, const int task, std::string testName, const int verbosity) {
     const std::string rootPath = "/home/asy/git/CA-TAMP/";
     const std::string folFile = "fol-pnp-switch.g";
     const std::string folFileS = "fol-pnp-switch-S.g";
-    const std::string testName = "serving";
 
-    const auto folFilePathOpt = utils::initializeFol(rootPath, testName, folFile, objectCount);
+    const auto folFilePathOpt = utils::initializeFol(rootPath, testName, folFile, objectCount, task);
     if (!folFilePathOpt) {
         std::cerr << "Failed to initialize FOL file" << std::endl;
         return;
     }
     const auto& folFilePath = *folFilePathOpt;
 
-    const auto folFilePathSOpt = utils::initializeFol(rootPath, testName, folFileS, 0);
+    const auto folFilePathSOpt = utils::initializeFol(rootPath, testName, folFileS, 0, task);
     if (!folFilePathSOpt) {
         std::cerr << "Failed to initialize FOL file S" << std::endl;
         return;
     }
     const auto& folFilePathS = *folFilePathSOpt;
 
-    initializeEnvironment(kin, environmentType, objectCount);
+    initializeEnvironment(kin, environmentType, objectCount, task);
 
     MiniLGP simpleScenario(kin, folFilePath.c_str());
     simpleScenario.displayBound = rai::BD_seqPath;
@@ -31,7 +30,7 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
 
     MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
     counterfactualSubScenario.verbose = -2;
-    const auto capacityRuleString = utils::capacityRule(objectCount);
+    const auto capacityRuleString = utils::trayCapacityRule(objectCount);
     counterfactualSubScenario.fol.addTerminalRule(capacityRuleString.c_str());
 
     MiniLGP counterfactualScenario(kin, folFilePath.c_str());
@@ -87,8 +86,9 @@ rai::LGP_NodeL CounterfactualLGP::decide_counterfactual(const rai::Configuration
     return counterfactualPath;
 }
 
-void CounterfactualLGP::initializeEnvironment(rai::Configuration &kin, int environmentType, int objectCount) {
-    utils::generateProblemPNP(kin, environmentType, objectCount);
+auto CounterfactualLGP::initializeEnvironment(rai::Configuration &kin, const int environmentType, const int objectCount,
+                                              const int task) -> void {
+    utils::generateProblem(kin, environmentType, objectCount, task);
     kin.selectJointsByAtt({"base", "armR"});
     kin.optimizeTree();
 }
