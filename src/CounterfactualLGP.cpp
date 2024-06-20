@@ -20,6 +20,8 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     }
     const auto& folFilePathS = *folFilePathSOpt;
 
+    cout<<"FOL FILE PATH: "<<folFilePath<<endl;
+    cout<<"FOL FILE PATH S: "<<folFilePathS<<endl;
     initializeEnvironment(kin, environmentType, objectCount, task);
 
     MiniLGP simpleScenario(kin, folFilePath.c_str());
@@ -27,17 +29,19 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     simpleScenario.verbose = -2;
     simpleScenario.fol.writePDDLfiles("z");
     simpleScenario.fol.addTerminalRule(terminalRule);
+    cout<<"TEST: "<<testName<<endl;
 
-    MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
-    counterfactualSubScenario.verbose = -2;
-    const auto capacityRuleString = utils::trayCapacityRule(objectCount);
-    counterfactualSubScenario.fol.addTerminalRule(capacityRuleString.c_str());
+    // MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
+    // counterfactualSubScenario.verbose = -2;
+    // const auto capacityRuleString = utils::trayCapacityRule(objectCount);
+    // counterfactualSubScenario.fol.addTerminalRule(capacityRuleString.c_str());
+    //
+    // MiniLGP counterfactualScenario(kin, folFilePath.c_str());
+    // counterfactualScenario.verbose = -2;
+    // counterfactualScenario.fol.addTerminalRule(terminalRule);
 
-    MiniLGP counterfactualScenario(kin, folFilePath.c_str());
-    counterfactualScenario.verbose = -2;
-    counterfactualScenario.fol.addTerminalRule(terminalRule);
-
-    decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType, verbosity);
+    //decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType, verbosity);
+    decide_uninformed(kin, simpleScenario);
 }
 
 rai::LGP_NodeL CounterfactualLGP::decide(const rai::Configuration &kin, MiniLGP &simpleScenario, MiniLGP &counterfactualSubScenario,

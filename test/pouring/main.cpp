@@ -7,10 +7,11 @@ int main(const int argc, char **argv) {
     try {
         constexpr int task = 2;
         const std::string testName = "pouring";
-        constexpr int environmentType = 1;
-        constexpr int objectCount = 1;
-        constexpr int totalObjectCount = 1;
+        constexpr int environmentType = 3;
+        constexpr int objectCount = 5;
+        constexpr int totalObjectCount = objectCount;
         constexpr int verbosity = 0;
+
 
 
         const std::string terminalRule = utils::problem(objectCount, environmentType, task);
@@ -18,10 +19,12 @@ int main(const int argc, char **argv) {
         rai::initCmdLine(argc, argv);
 
         rai::Configuration C;
-        if (!utils::generateProblem(C, environmentType, totalObjectCount, task)) {
+        if ( !utils::generateProblem(C, environmentType, totalObjectCount, task)) {
             std::cerr << "Failed to generate problem PNP" << std::endl;
             return EXIT_FAILURE;
         }
+
+        // C.view(true);
 
         CounterfactualLGP counterfactualLGP(C, terminalRule.c_str(), environmentType, totalObjectCount, task, testName, verbosity);
 

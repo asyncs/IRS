@@ -15,9 +15,15 @@ FOL_World{
 gripper
 object
 table
+jug
+glass
+waterSource
 partOf
 
+
 on
+empty
+filled
 busy     # involved in an ongoing (durative) activity
 free     # gripper hand is free
 held     # object is held by an gripper
@@ -60,6 +66,18 @@ DecisionRule place {
   X, Y, Z,
   { (picked X Y) (table Z) (held Y) }
   { (picked X Y)! (busy X)! (busy Y)! (held Y)! # logic only
+    (stable ANY Y)! (touch X Y)! # NLP predicates
+    (on Z Y) (above Y Z) (stableOn Z Y) tmp(touch X Y) tmp(touch Y Z)
+    #(INFEASIBLE pick ANY Y)! block(INFEASIBLE pick ANY Y)
+    }
+}
+
+#####################################################################
+
+DecisionRule fill {
+  X, Y, Z,
+  { (picked X Y) (waterSource Z) (glass Y) (held Y) (empty Y)}
+  { (picked X Y)! (busy X)! (busy Y)! (held Y)! (empty Y)! (filled Y)# logic only
     (stable ANY Y)! (touch X Y)! # NLP predicates
     (on Z Y) (above Y Z) (stableOn Z Y) tmp(touch X Y) tmp(touch Y Z)
     #(INFEASIBLE pick ANY Y)! block(INFEASIBLE pick ANY Y)

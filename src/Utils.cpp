@@ -70,7 +70,74 @@ auto generateProblem(rai::Configuration &C, const int environmentType, const int
             return true;
         }
         case 2: {
-            cout<<"Pouring"<<endl;
+            for (;;) {
+                C.clear();
+                C.addFile("../../models/pr2/pr2.g");
+                C.selectJointsByAtt({"base", "armR"});
+                C.pruneInactiveJoints();
+                C.optimizeTree();
+                C["pr2R"]->ats->add<rai::Graph>("logical", {{"gripper", true}});
+                C["worldTranslationRotation"]->joint->H = 1e-0;
+                C.addFile("../../models/scenes/pouring_room.g");
+
+                double x_cor = 0;
+                double y_cor = 0;
+                double change = 0;
+                const std::string glass_locations[4] = {"table_1", "table_2", "table_3"};
+                for (int i = 0; i < numObj; i++) {
+                    rai::Frame* f = C.addFrame(STRING("glass" << i), glass_locations[i % 3].c_str(),
+                                               "type:ssBox size:[.08 .08 .15 .05] color:[1. 1. 1.], contact, logical={ empty, glass, object }, joint:rigid");
+                    if (i % 3 == 0) {
+                        change += 0.25;
+                    }
+                    if (i % 2 == 0) {
+                        f->setRelativePosition({x_cor, y_cor+change, .15});
+                        f->setRelativeQuaternion(rai::Quaternion(0).addZ(rnd.uni(-RAI_PI, RAI_PI)).getArr4d());
+                    }
+                    else {
+                        f->setRelativePosition({x_cor, y_cor-change, .15});
+                        f->setRelativeQuaternion(rai::Quaternion(0).addZ(rnd.uni(-RAI_PI, RAI_PI)).getArr4d());
+                    }
+
+                }
+                C.stepFcl();
+                arr y, J;
+                C.kinematicsPenetration(y, J);
+                if (y.scalar() == 0.0) break;
+            }
+            C.proxies.clear();
+
+            // rai::Frame* tray_frame = C.addFrame("tray", "table_2",
+            //                 "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6], contact, logical={ table, object }, joint:rigid");
+            // tray_frame->setRelativePosition({0, 0.5, .07});
+            // C.addFrame("", "tray", "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6]");
+
+            switch (environmentType) {
+                case 1: {
+                    rai::Frame *pitcher_frame = C.addFrame("pitcher", "table_1",
+                                        "type:ssBox size:[.1 .1 .5 .01] color:[.22 .22 .6], contact, logical={ empty, jug, glass, object }, joint:rigid");
+                    pitcher_frame->setRelativePosition({0, 0, .07});
+                    break;
+                }
+                case 2: {
+                    rai::Frame *pitcher_frame = C.addFrame("pitcher", "table_2",
+                                        "type:ssBox size:[.1 .1 .5 .01] color:[.22 .22 .6], contact, logical={ empty, jug, glass, object }, joint:rigid");
+                    pitcher_frame->setRelativePosition({0, 0, .07});
+                    break;
+                }
+                case 3: {
+                    // If the pricher has size of "type:ssBox size:[.1 .1 .5 .01] (big), then it picks that first. somewhat gets affected by the size of it?
+                    // Update: any size bigger than the objkect not necessearyly to be large
+                    rai::Frame *pitcher_frame = C.addFrame("pitcher", "table_3",
+                                        "type:ssBox size:[.08 .08 .15 .05] color:[.22 .22 .6], contact, logical={ empty, jug, glass, object }, joint:rigid");
+                    pitcher_frame->setRelativePosition({0, 0.6, .15});
+                    break;
+                }
+
+                default:
+                    std::cerr << "Error: Invalid environment type specified. Please specify a valid environment type." << std::endl;
+                    return std::nullopt;
+            }
             return true;
         }
         default: {
@@ -95,7 +162,7 @@ auto initializeFol(const std::string &rootPath, const std::string &testName, con
             }
             break;
         case 2:
-            cout << "Pouring" << endl;
+            affordableFol.createModifiedFolFile("");
             break;
         default:
             break;
@@ -116,7 +183,7 @@ auto trayCapacityRule(const int objectCount) -> std::string {
 auto problem(const int objectCount, const int environmentType, const int task) -> std::string {
     std::string terminal;
     switch (task) {
-        case 1://Serving task
+        case 1:
             switch (environmentType) {
                 case 1:
                     terminal = "(on kitchen_counter_goal obj0) ";
@@ -141,13 +208,17 @@ auto problem(const int objectCount, const int environmentType, const int task) -
                     break;
             }
             break;
-        case 2://Pouring task
+        case 2:
+            terminal = "(filled  glass0) ";
+            for (int i = 1; i < objectCount; i++) {
+                terminal += "(filled  glass" + std::to_string(i) + ") ";
+            }
             break;
         default:
             terminal = "";
             break;
     }
-    cout << terminal <<std::endl;
+    cout << "Terminal Rule: " << terminal << endl;
     return terminal;
 }
 
