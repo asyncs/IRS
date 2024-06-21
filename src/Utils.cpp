@@ -73,10 +73,11 @@ auto generateProblem(rai::Configuration &C, const int environmentType, const int
             for (;;) {
                 C.clear();
                 C.addFile("../../models/pr2/pr2.g");
-                C.selectJointsByAtt({"base", "armR"});
+                C.selectJointsByAtt({"base","armL","armR"});
                 C.pruneInactiveJoints();
                 C.optimizeTree();
-                C["pr2R"]->ats->add<rai::Graph>("logical", {{"gripper", true}});
+                C["pr2L"]->ats->add<rai::Graph>({"logical"}, {{"gripper", true}});
+                C["pr2R"]->ats->add<rai::Graph>({"logical"}, {{"gripper", true}});
                 C["worldTranslationRotation"]->joint->H = 1e-0;
                 C.addFile("../../models/scenes/pouring_room.g");
 
@@ -129,7 +130,7 @@ auto generateProblem(rai::Configuration &C, const int environmentType, const int
                     // If the pricher has size of "type:ssBox size:[.1 .1 .5 .01] (big), then it picks that first. somewhat gets affected by the size of it?
                     // Update: any size bigger than the objkect not necessearyly to be large
                     rai::Frame *pitcher_frame = C.addFrame("pitcher", "table_3",
-                                        "type:ssBox size:[.08 .08 .15 .05] color:[.22 .22 .6], contact, logical={ empty, jug, glass, object }, joint:rigid");
+                                        "type:ssBox size:[.08 .08 .15 .05] color:[.22 .22 .6], contact, logical={ filled, jug, glass, object }, joint:rigid");
                     pitcher_frame->setRelativePosition({0, 0.6, .15});
                     break;
                 }
@@ -152,17 +153,19 @@ auto initializeFol(const std::string &rootPath, const std::string &testName, con
                                        rootPath + "test/" + testName + "/" + folFileName);
     affordableFol.deleteModifiedFolFile();
     GenerateDecisionRule();
+    std::string decisionRule;
     switch (task) {
         case 1:
             if (targetCount > 0) {
-                const std::string decisionRule = GenerateDecisionRule::getDecisionRule("TransportAffordable", targetCount);
+                decisionRule = GenerateDecisionRule::getDecisionRule("TransportAffordable", targetCount);
                 affordableFol.createModifiedFolFile(decisionRule);
             } else {
                 affordableFol.createModifiedFolFile("");
             }
             break;
         case 2:
-            affordableFol.createModifiedFolFile("");
+            decisionRule = GenerateDecisionRule::getDecisionRule("PourAffordable", targetCount);
+            affordableFol.createModifiedFolFile(decisionRule);
             break;
         default:
             break;
@@ -209,9 +212,10 @@ auto problem(const int objectCount, const int environmentType, const int task) -
             }
             break;
         case 2:
-            terminal = "(filled  glass0) ";
+            // terminal = "(picked pr2R pitcher) (picked pr2L glass0) ";
+            terminal = "(filled  glass0) (on water_source glass0)";
             for (int i = 1; i < objectCount; i++) {
-                terminal += "(filled  glass" + std::to_string(i) + ") ";
+                terminal += "(filled  glass" + std::to_string(i) + ") (on water_source glass" + std::to_string(i) + ") ";
             }
             break;
         default:

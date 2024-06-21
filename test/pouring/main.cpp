@@ -8,7 +8,7 @@ int main(const int argc, char **argv) {
         constexpr int task = 2;
         const std::string testName = "pouring";
         constexpr int environmentType = 3;
-        constexpr int objectCount = 5;
+        constexpr int objectCount = 3;
         constexpr int totalObjectCount = objectCount;
         constexpr int verbosity = 0;
 

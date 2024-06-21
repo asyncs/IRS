@@ -32,6 +32,17 @@ std::string GenerateDecisionRule::generateRule(const std::string& affordanceType
         rule << "\n";
         rule << "#####################################################################";
     }
-
+    else if (affordanceType == "PourAffordable") {
+        rule << "DecisionRule fill" << affordanceType << " {\n";
+        rule << "  X, Q, Y, Z,\n";
+        rule << "  { (gripper X) (gripper Q) (glass Y) (jug Z) (picked Q Z) (busy X)! (held Y)! (held Z) (empty Y) (filled Z)}\n";
+        rule << "  { (above Y ANY)! (on ANY Y)! (stableOn ANY Y)!\n";
+        rule << "    (picked X Y) (held Y) (busy X) (empty Y)! (filled Y)\n";
+        rule << "    (touch X Y) (stable X Y)\n";
+        rule << "    }\n";
+        rule << "}\n";
+        rule << "\n";
+        rule << "#####################################################################";
+    }
     return rule.str();
 }
