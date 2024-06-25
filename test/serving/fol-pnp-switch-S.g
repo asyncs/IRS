@@ -15,7 +15,7 @@ FOL_World{
 gripper
 object
 table
-pitcher
+jug
 glass
 waterSource
 partOf

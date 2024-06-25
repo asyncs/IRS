@@ -188,6 +188,20 @@ add_executable(pouring test/pouring/main.cpp
 )
 target_link_libraries(pouring rai)
 
+add_executable(handOver test/handOver/main.cpp
+        src/GenericFolFile.cpp
+        src/GenericFolFile.h
+        src/GenerateDecisionRule.cpp
+        src/GenerateDecisionRule.h
+        src/MiniLGP.cpp
+        src/MiniLGP.h
+        src/CounterfactualLGP.cpp
+        src/CounterfactualLGP.h
+        src/Utils.cpp
+        src/Utils.h
+)
+target_link_libraries(handOver rai)
+
 ################################################################################
 
 install(

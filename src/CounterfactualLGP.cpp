@@ -22,6 +22,7 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
 
     cout<<"FOL FILE PATH: "<<folFilePath<<endl;
     cout<<"FOL FILE PATH S: "<<folFilePathS<<endl;
+    cout<<"TEST: "<<testName<<endl;
     initializeEnvironment(kin, environmentType, objectCount, task);
 
     MiniLGP simpleScenario(kin, folFilePath.c_str());
@@ -29,7 +30,6 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     simpleScenario.verbose = -2;
     simpleScenario.fol.writePDDLfiles("z");
     simpleScenario.fol.addTerminalRule(terminalRule);
-    cout<<"TEST: "<<testName<<endl;
 
     // MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
     // counterfactualSubScenario.verbose = -2;
@@ -73,8 +73,8 @@ rai::LGP_NodeL CounterfactualLGP::decide(const rai::Configuration &kin, MiniLGP 
 rai::LGP_NodeL CounterfactualLGP::decide_uninformed(const rai::Configuration &kin, MiniLGP &simpleScenario) {
     rai::LGP_Node *simpleRoot = nullptr;
     rai::LGP_NodeL simplePath = simpleScenario.imagine(1000000, simpleRoot);
-    const double simpleCount = estimateCost(kin, simplePath, 0);
-    std::cout << "SIMPLE COUNT: " << simpleCount << std::endl;
+    // const double simpleCount = estimateCost(kin, simplePath, 0);
+    // std::cout << "SIMPLE COUNT: " << simpleCount << std::endl;
     simpleScenario.commit();
     return simplePath;
 }
@@ -93,7 +93,7 @@ rai::LGP_NodeL CounterfactualLGP::decide_counterfactual(const rai::Configuration
 auto CounterfactualLGP::initializeEnvironment(rai::Configuration &kin, const int environmentType, const int objectCount,
                                               const int task) -> void {
     utils::generateProblem(kin, environmentType, objectCount, task);
-    kin.selectJointsByAtt({"base", "armR"});
+    // kin.selectJointsByAtt({"base", "armR"});
     kin.optimizeTree();
 }
 
