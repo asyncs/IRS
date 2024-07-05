@@ -11,8 +11,11 @@ public:
     void nodeSurgery(rai::LGP_Node *donorNode);
     void pathSurgery(const rai::LGP_NodeL &donorPath, bool verbose = false);
     void stepPartial();
+    void stepPartial_symbolic();
     rai::LGP_NodeL imagine(uint steps, rai::LGP_Node *donorNode);
     rai::LGP_NodeL imagine(uint steps, const rai::LGP_NodeL &donorPath);
+    rai::LGP_NodeL imagine_symbolic(uint steps, rai::LGP_Node *donorNode);
+    rai::LGP_NodeL imagine_symbolic(uint steps, const rai::LGP_NodeL &donorPath);
     void commit();
 };
 

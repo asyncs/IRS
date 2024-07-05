@@ -14,6 +14,9 @@ CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, int environ
  static rai::LGP_NodeL decide(const rai::Configuration &kin, MiniLGP &simpleScenario, MiniLGP &counterfactualSubScenario,
                               MiniLGP &counterfactualScenario, int environmentType, int verbosity);
 
+static rai::LGP_NodeL decide_symbolic(const rai::Configuration &kin, MiniLGP &simpleScenario, MiniLGP &counterfactualSubScenario,
+                             MiniLGP &counterfactualScenario, int environmentType, int verbosity);
+
  static rai::LGP_NodeL decide_uninformed(const rai::Configuration &kin, MiniLGP &simpleScenario);
 
  static rai::LGP_NodeL decide_counterfactual(const rai::Configuration &kin, MiniLGP &counterfactualSubScenario,

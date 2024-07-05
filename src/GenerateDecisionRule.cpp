@@ -44,8 +44,17 @@ std::string GenerateDecisionRule::generateRule(const std::string& affordanceType
         rule << "\n";
         rule << "#####################################################################";
     }
+    else if (affordanceType == "HandOverAffordable") {
+        rule << "DecisionRule handoverPick" << " {\n";
+        rule << "  X, Y, Z\n";
+        rule << "  { (helper_gripper X) (object Y) (helper_zone Z)  (on Z Y) (busy X)! (held Y)! }\n";
+        rule << "  { (above Y ANY)! (on ANY Y)! (stableOn ANY Y)!\n";
+        rule << "    (picked X Y) (held Y) (busy X)\n";
+        rule << "    (touch X Y) (stable X Y)\n";
+        rule << "    }\n";
+        rule << "}\n";
+        rule << "\n";
+        rule << "#####################################################################";
+    }
     return rule.str();
 }
-
-//(picked X Y) (held Y) (busy X) (empty Y)!
-//(stable X Y)

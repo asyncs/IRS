@@ -14,11 +14,13 @@ FOL_World{
 ## basic predicates
 gripper
 gripper_support
+helper_gripper
 object
 table
 jug
 glass
 waterSource
+helper_zone
 partOf
 
 
@@ -77,6 +79,18 @@ DecisionRule reach {
 DecisionRule place {
   X, Y, Z,
   { (picked X Y) (table Z) (held Y) }
+  { (picked X Y)! (busy X)! (busy Y)! (held Y)! # logic only
+    (stable ANY Y)! (touch X Y)! # NLP predicates
+    (on Z Y) (above Y Z) (stableOn Z Y) tmp(touch X Y) tmp(touch Y Z)
+    #(INFEASIBLE pick ANY Y)! block(INFEASIBLE pick ANY Y)
+    }
+}
+
+#####################################################################
+
+DecisionRule give {
+  X, Y, Z,
+  { (picked X Y) (helper_zone Z) (held Y) }
   { (picked X Y)! (busy X)! (busy Y)! (held Y)! # logic only
     (stable ANY Y)! (touch X Y)! # NLP predicates
     (on Z Y) (above Y Z) (stableOn Z Y) tmp(touch X Y) tmp(touch Y Z)

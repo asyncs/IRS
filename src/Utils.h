@@ -18,6 +18,7 @@ namespace utils {
  std::optional<std::string> initializeFol(const std::string& rootPath, const std::string& testName, const std::string& folFileName, int targetCount, int task);
  std::string trayCapacityRule(int objectCount);
  std::string fillPitcherRule();
+ std::string shareRobotRule(int objectCount);
  std::string problem(int objectCount, int environmentType, int task);
 
 } // namespace utils

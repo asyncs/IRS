@@ -33,8 +33,6 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
     simpleScenario.fol.writePDDLfiles("z");
     simpleScenario.fol.addTerminalRule(terminalRule);
 
-    // decide_uninformed(kin, simpleScenario);
-
     switch (task) {
         case 1: {
             MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
@@ -58,6 +56,18 @@ CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *termin
             counterfactualScenario.verbose = -2;
             counterfactualScenario.fol.addTerminalRule(terminalRule);
             decide(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType, verbosity);
+            break;
+        }
+        case 3: {
+            MiniLGP counterfactualSubScenario(kin, folFilePathS.c_str());
+            counterfactualSubScenario.verbose = -2;
+            const auto shareRobotRuleString = utils::shareRobotRule(objectCount);
+            counterfactualSubScenario.fol.addTerminalRule(shareRobotRuleString.c_str());
+
+            MiniLGP counterfactualScenario(kin, folFilePath.c_str());
+            counterfactualScenario.verbose = -2;
+            counterfactualScenario.fol.addTerminalRule(terminalRule);
+            decide_symbolic(kin, simpleScenario, counterfactualSubScenario, counterfactualScenario, environmentType, verbosity);
             break;
         }
     }
@@ -95,6 +105,40 @@ rai::LGP_NodeL CounterfactualLGP::decide(const rai::Configuration &kin, MiniLGP 
         counterfactualScenario.commit();
         return counterfactualPath;
     }
+}
+
+rai::LGP_NodeL CounterfactualLGP::decide_symbolic(const rai::Configuration &kin, MiniLGP &simpleScenario, MiniLGP &counterfactualSubScenario,
+                                         MiniLGP &counterfactualScenario, int environmentType, const int verbosity) {
+    rai::LGP_Node *simpleRoot = nullptr;
+    rai::LGP_NodeL simplePath = simpleScenario.imagine_symbolic(1000000, simpleRoot);
+
+    rai::LGP_Node *counterfactualSubRoot = nullptr;
+    const rai::LGP_NodeL counterfactualSubPath = counterfactualSubScenario.imagine_symbolic(1000000, counterfactualSubRoot);
+
+    rai::LGP_NodeL counterfactualPath = counterfactualScenario.imagine_symbolic(1000000, counterfactualSubPath);
+    cout <<simplePath.last()->getTreePathString()<<endl;
+    cout <<counterfactualPath.last()->getTreePathString()<<endl;
+
+    // const double simpleCount = estimateCost(kin, simplePath, false);
+    // std::cout << "SIMPLE COUNT: " << simpleCount << std::endl;
+    // const double counterfactualCount = estimateCost(kin, counterfactualPath, verbosity);
+    // std::cout << "COUNTERFACTUAL COUNT: " << counterfactualCount << std::endl;
+    // const double ett = counterfactualCount - simpleCount;
+    // std::cout << "ETT:" << ett << std::endl;
+    //
+    // if (ett >= 0) {
+    //     cout<<"'label_utilize': 0,"<<endl;
+    //     cout<<"'mbts_effort':"<<simpleCount<<", 'counterfactual_effort':" << counterfactualCount << endl;
+    //     cout<<"}"<<endl;;
+    //     simpleScenario.commit();
+    //     return simplePath;
+    // } else {
+    //     cout<<"'label_utilize': 1,"<<endl;
+    //     cout<<"'mbts_effort':"<<simpleCount<<", 'counterfactual_effort':" << counterfactualCount << endl;
+    //     cout<<"}"<<endl;;
+    //     counterfactualScenario.commit();
+    //     return counterfactualPath;
+    // }
 }
 
 rai::LGP_NodeL CounterfactualLGP::decide_uninformed(const rai::Configuration &kin, MiniLGP &simpleScenario) {

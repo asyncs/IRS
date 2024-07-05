@@ -50,7 +50,7 @@ Edit panda_hand_joint: { joint: none }
 
 panda_gripper(panda_joint7): {
  Q: "d(180 0 1 0) d(135 0 0 1) t(0 0 -.22)"
- , shape: marker, size: [.03], color: [.9, .9, .9], logical: { gripper } }
+ , shape: marker, size: [.03], color: [.9, .9, .9], logical: { helper_gripper } }
 palm(panda_hand_joint): {
  Q: "d(90 1 0 0)"
  , shape: capsule, color: [1.,1.,1.,.2], size: [.14, .07], contact: -3 }

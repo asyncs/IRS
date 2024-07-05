@@ -113,6 +113,15 @@ void MiniLGP::stepPartial() {
     numSteps++;
 }
 
+void MiniLGP::stepPartial_symbolic() {
+    expandNext();
+
+    if (fringe_poseToGoal.N) {
+        std::cout << "EVALUATING PATH " << fringe_poseToGoal.last()->getTreePathString() << std::endl;
+    }
+    numSteps++;
+}
+
 rai::LGP_NodeL MiniLGP::imagine(const uint steps, rai::LGP_Node *donorNode) {
     nodeSurgery(donorNode);
 
@@ -126,6 +135,19 @@ rai::LGP_NodeL MiniLGP::imagine(const uint steps, rai::LGP_Node *donorNode) {
     return fringe_path;
 }
 
+rai::LGP_NodeL MiniLGP::imagine_symbolic(const uint steps, rai::LGP_Node *donorNode) {
+    nodeSurgery(donorNode);
+
+    for (uint k = 0; k < steps; k++) {
+        stepPartial_symbolic();
+
+        if (constexpr uint stopPath = 1; fringe_poseToGoal.N >= stopPath) break;
+        if (constexpr double stopTime = 400.; COUNT_time > stopTime) break;
+    }
+    init();
+    return fringe_poseToGoal;
+}
+
 rai::LGP_NodeL MiniLGP::imagine(const uint steps, const rai::LGP_NodeL &donorPath) {
     pathSurgery(donorPath, false);
 
@@ -137,6 +159,19 @@ rai::LGP_NodeL MiniLGP::imagine(const uint steps, const rai::LGP_NodeL &donorPat
     }
 
     return fringe_path;
+}
+
+rai::LGP_NodeL MiniLGP::imagine_symbolic(const uint steps, const rai::LGP_NodeL &donorPath) {
+    pathSurgery(donorPath, false);
+
+    for (uint k = 0; k < steps; k++) {
+        stepPartial_symbolic();
+
+        if (constexpr uint stopPath = 1; fringe_poseToGoal.N >= stopPath) break;
+        if (constexpr double stopTime = 400.; COUNT_time > stopTime) break;
+    }
+
+    return fringe_poseToGoal;
 }
 
 void MiniLGP::commit() {
