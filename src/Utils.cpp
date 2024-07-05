@@ -30,7 +30,6 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
                 if (y.scalar() == 0.0) break;
             }
             C.proxies.clear();
-            // C.view(true, "kitchen room");
 
             switch (taskSpecific) {
                 case 1: {
@@ -59,7 +58,6 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
                     return std::nullopt;
 
             }
-            // C.view(true, "kitchen room");
 
             switch (environmentType) {
                 case 1: {
@@ -87,7 +85,6 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
                     std::cerr << "Error: Invalid environment type specified. Please specify a valid environment type." << std::endl;
                 return std::nullopt;
             }
-            // C.view(true, "kitchen room");
 
             return true;
         }
@@ -171,8 +168,6 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
                     {{-.3, 0}, {.3, .0}, {.3, 0}, {-.3, .25},{.3, .25}}, {{-.3, 0}, {.3, .0}, {.3, 0}, {-.3, .25},{.3, .25}}, {{-.3, 0}, {.3, .0}, {.3, 0}, {.3, .25},{.3, .25}}, {{-.3, 0}, {.3, .0}, {.3, 0}, {-.3, .25},{-.3, -.25}},
                     {{-.3, 0}, {.3, .0}, {.3, 0}, {.3, .25},{.3, -.25}}, {{-.3, 0}, {.3, .0}, {.3, 0}, {.3, .25},{.3, -.25}},
                 } ;
-                cout<<""<<endl;
-                cout<<"{";
                 int i;
                 for (i = 0; i < numObj; i++) {
                     rai::Frame* f = C.addFrame(STRING("glass" << i), glass_locations[environmentType][i].c_str(),
@@ -180,50 +175,6 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
 
                     f->setRelativePosition({glass_positions[environmentType][i][0], glass_positions[environmentType][i][1], .15});
                     f->setRelativeQuaternion(rai::Quaternion(0).addZ(rnd.uni(-RAI_PI, RAI_PI)).getArr4d());
-                    if (glass_locations[environmentType][i] == "table_1") {
-                        std::string obj = "obj" + std::to_string(i);
-
-                        cout << "'" << obj << " on table_north': 0, "
-                             << "'" << obj << " on table_south': 1, "
-                             << "'" << obj << " on table_east': 0, "
-                             << "'" << obj << " on table_west': 0, "
-                             << "'" << obj << " on table_watersource': 0, "
-                             << "'" << obj << " on table_obstacle': 0, "
-                             << "'" << obj << " on table_handover': 0," << endl;
-                    }
-                    else if (glass_locations[environmentType][i] == "table_2") {
-                        std::string obj = "obj" + std::to_string(i);
-
-                        cout << "'" << obj << " on table_north': 1, "
-                             << "'" << obj << " on table_south': 0, "
-                             << "'" << obj << " on table_east': 0, "
-                             << "'" << obj << " on table_west': 0, "
-                             << "'" << obj << " on table_watersource': 0, "
-                             << "'" << obj << " on table_obstacle': 0, "
-                             << "'" << obj << " on table_handover': 0," << endl;
-                    }
-                    else if (glass_locations[environmentType][i] == "table_3") {
-                        std::string obj = "obj" + std::to_string(i);
-
-                        cout << "'" << obj << " on table_north': 0, "
-                             << "'" << obj << " on table_south': 0, "
-                             << "'" << obj << " on table_east': 0, "
-                             << "'" << obj << " on table_west': 1, "
-                             << "'" << obj << " on table_watersource': 0, "
-                             << "'" << obj << " on table_obstacle': 0, "
-                             << "'" << obj << " on table_handover': 0," << endl;
-                    }
-                }
-                for (; i < 5; i++) {
-                    std::string obj = "obj" + std::to_string(i);
-
-                    cout << "'" << obj << " on table_north': 0, "
-                         << "'" << obj << " on table_south': 0, "
-                         << "'" << obj << " on table_east': 0, "
-                         << "'" << obj << " on table_west': 0, "
-                         << "'" << obj << " on table_watersource': 0, "
-                         << "'" << obj << " on table_obstacle': 0, "
-                         << "'" << obj << " on table_handover': 0," << endl;
                 }
                 C.stepFcl();
                 arr y, J;
@@ -237,93 +188,18 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
                     rai::Frame *pitcher_frame = C.addFrame("pitcher", "table_1",
                                         "type:ssBox size:[.08 .08 .15 .05] color:[.22 .22 .6], contact, logical={empty, jug, glass, object }, joint:rigid");
                     pitcher_frame->setRelativePosition({-.3, 0.75, .15});
-                    cout << "'" << "tray" << " on table_north': 0, "
-                         << "'" << "tray" << " on table_south': 0, "
-                         << "'" << "tray" << " on table_east': 0, "
-                         << "'" << "tray" << " on table_west': 0, "
-                         << "'" << "tray" << " on table_watersource': 0, "
-                         << "'" << "tray" << " on table_obstacle': 0, "
-                         << "'" << "tray" << " on table_handover': 0," << endl;
-                    cout << "'" << "jug" << " on table_north': 0, "
-                         << "'" << "jug" << " on table_south': 1, "
-                         << "'" << "jug" << " on table_east': 0, "
-                         << "'" << "jug" << " on table_west': 0, "
-                         << "'" << "jug" << " on table_watersource': 0, "
-                         << "'" << "jug" << " on table_obstacle': 0, "
-                         << "'" << "jug" << " on table_handover': 0," << endl;
-                    cout << "'" << "helper_robot" << " on table_north': 0, "
-                         << "'" << "helper_robot" << " on table_south': 0, "
-                         << "'" << "helper_robot" << " on table_east': 0, "
-                         << "'" << "helper_robot" << " on table_west': 0, "
-                         << "'" << "helper_robot" << " on table_watersource': 0, "
-                         << "'" << "helper_robot" << " on table_obstacle': 0, "
-                         << "'" << "helper_robot" << " on table_handover': 0," << endl;
-                    cout<<"'goal at table_north': 0, 'goal at table_south': 0, 'goal at table_east': 0, 'goal at table_west': 0, 'goal at table_watersource': 0, 'goal at table_obstacle': 0, 'goal at table_handover': 0,"<<endl;
-                    cout<<"'action_pick': 1, 'action_place': 1, 'action_carry': 0, 'action_fill': 1, 'action_pour': 1, 'action_handover': 0,"<<endl;;
-                    cout<<"'task_serving': 0, 'task_pouring': 1, 'task_handover': 0,"<<endl;
-                    cout<<""<<endl;
                     break;
                 }
                 case 2: {
                     rai::Frame *pitcher_frame = C.addFrame("pitcher", "table_2",
                                         "type:ssBox size:[.08 .08 .15 .05] color:[.22 .22 .6], contact, logical={empty, jug, glass, object }, joint:rigid");
                     pitcher_frame->setRelativePosition({0.3, 0.75, .15});
-                    cout << "'" << "tray" << " on table_north': 0, "
-                         << "'" << "tray" << " on table_south': 0, "
-                         << "'" << "tray" << " on table_east': 0, "
-                         << "'" << "tray" << " on table_west': 0, "
-                         << "'" << "tray" << " on table_watersource': 0, "
-                         << "'" << "tray" << " on table_obstacle': 0, "
-                         << "'" << "tray" << " on table_handover': 0," << endl;
-                    cout << "'" << "jug" << " on table_north': 1, "
-                         << "'" << "jug" << " on table_south': 0, "
-                         << "'" << "jug" << " on table_east': 0, "
-                         << "'" << "jug" << " on table_west': 0, "
-                         << "'" << "jug" << " on table_watersource': 0, "
-                         << "'" << "jug" << " on table_obstacle': 0, "
-                         << "'" << "jug" << " on table_handover': 0," << endl;
-                    cout << "'" << "helper_robot" << " on table_north': 0, "
-                         << "'" << "helper_robot" << " on table_south': 0, "
-                         << "'" << "helper_robot" << " on table_east': 0, "
-                         << "'" << "helper_robot" << " on table_west': 0, "
-                         << "'" << "helper_robot" << " on table_watersource': 0, "
-                         << "'" << "helper_robot" << " on table_obstacle': 0, "
-                         << "'" << "helper_robot" << " on table_handover': 0," << endl;
-                    cout<<"'goal at table_north': 0, 'goal at table_south': 0, 'goal at table_east': 0, 'goal at table_west': 0, 'goal at table_watersource': 0, 'goal at table_obstacle': 0, 'goal at table_handover': 0,"<<endl;
-                    cout<<"'action_pick': 1, 'action_place': 1, 'action_carry': 0, 'action_fill': 1, 'action_pour': 1, 'action_handover': 0,"<<endl;;
-                    cout<<"'task_serving': 0, 'task_pouring': 1, 'task_handover': 0,"<<endl;
-                    cout<<""<<endl;
                     break;
                 }
                 case 3: {
                     rai::Frame *pitcher_frame = C.addFrame("pitcher", "table_3",
                                         "type:ssBox size:[.08 .08 .15 .05] color:[.22 .22 .6], contact, logical={empty, jug, glass, object }, joint:rigid");
                     pitcher_frame->setRelativePosition({0.3, 0.75, .15});
-                    cout << "'" << "tray" << " on table_north': 0, "
-                         << "'" << "tray" << " on table_south': 0, "
-                         << "'" << "tray" << " on table_east': 0, "
-                         << "'" << "tray" << " on table_west': 0, "
-                         << "'" << "tray" << " on table_watersource': 0, "
-                         << "'" << "tray" << " on table_obstacle': 0, "
-                         << "'" << "tray" << " on table_handover': 0," << endl;
-                    cout << "'" << "jug" << " on table_north': 0, "
-                         << "'" << "jug" << " on table_south': 0, "
-                         << "'" << "jug" << " on table_east': 0, "
-                         << "'" << "jug" << " on table_west': 1, "
-                         << "'" << "jug" << " on table_watersource': 0, "
-                         << "'" << "jug" << " on table_obstacle': 0, "
-                         << "'" << "jug" << " on table_handover': 0," << endl;
-                    cout << "'" << "helper_robot" << " on table_north': 0, "
-                         << "'" << "helper_robot" << " on table_south': 0, "
-                         << "'" << "helper_robot" << " on table_east': 0, "
-                         << "'" << "helper_robot" << " on table_west': 0, "
-                         << "'" << "helper_robot" << " on table_watersource': 0, "
-                         << "'" << "helper_robot" << " on table_obstacle': 0, "
-                         << "'" << "helper_robot" << " on table_handover': 0," << endl;
-                    cout<<"'goal at table_north': 0, 'goal at table_south': 0, 'goal at table_east': 0, 'goal at table_west': 0, 'goal at table_watersource': 0, 'goal at table_obstacle': 0, 'goal at table_handover': 0,"<<endl;
-                    cout<<"'action_pick': 1, 'action_place': 1, 'action_carry': 0, 'action_fill': 1, 'action_pour': 1, 'action_handover': 0,"<<endl;;
-                    cout<<"'task_serving': 0, 'task_pouring': 1, 'task_handover': 0,"<<endl;
-                    cout<<""<<endl;
                     break;
                 }
                 default:
@@ -506,25 +382,4 @@ auto problem(const int objectCount, const int environmentType, const int task) -
     return terminal;
 }
 
-std::vector<std::string> createRowData(int instance) {
-    std::vector<std::string> rowData;
-
-    // Example: Modify this part with your data generation logic for multiple rows
-    // Here we're just alternating some values based on the instance number for demonstration
-    rowData.push_back((instance % 2 == 0) ? "1,0,0,0,0,0,0" : "0,1,0,0,0,0,0");
-    rowData.push_back("0,0,0,0,0,0,0");
-    rowData.push_back("0,0,0,0,0,0,0");
-    rowData.push_back("0,0,0,0,0,0,0");
-    rowData.push_back("0,0,0,0,0,0,0");
-    rowData.push_back("0,0,0,0,0,0,0");
-    rowData.push_back((instance % 2 == 0) ? "0,1,0,0,0,0,0" : "0,0,1,0,0,0,0");
-    rowData.push_back("0,0,0,0,0,0,0");
-    rowData.push_back("0,0,0,0,0,0,0");
-    rowData.push_back("1,1,0,1,1,0");
-    rowData.push_back("0,1,0");
-    rowData.push_back("0");
-    rowData.push_back("33.71149,6.19481");
-
-    return rowData;
-}
 } // namespace utils
