@@ -1,6 +1,6 @@
 Frame kitchen_counter: { shape: ssBox, X: "t(3. 0 .6)", size: [1, 3, .1, .02], color: [.75, .75, .75], fixed, contact, logical: {  } }
 
-Frame kitchen_table: { shape: ssBox, X: "t(1 2 .6) d(90 0 0 1)", size: [1, 1, .1, .02], color: [1, .6, 1], fixed, contact, logical: { } }
+Frame kitchen_table: { shape: ssBox, X: "t(1.3 2 .6) d(90 0 0 1)", size: [1, 2, .1, .02], color: [1, .6, 1], fixed, contact, logical: { } }
 
 Frame dining_table: { shape: ssBox, X: "t(-1.7 0. .6)", size: [1, 2, .1, .02], color: [1, 1, .6], fixed, contact, logical: {  } }
 

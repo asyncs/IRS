@@ -13,6 +13,7 @@ FOL_World{
 
 ## basic predicates
 gripper
+gripper_support
 object
 table
 jug
@@ -29,6 +30,7 @@ free     # gripper hand is free
 held     # object is held by an gripper
 picked   # gripper X holds/has picked object Y
 placed   # gripper X holds/has picked object Y
+reached  # gripper X has reached object Y
 
 ## KOMO symbols
 touch
@@ -62,6 +64,16 @@ DecisionRule pick {
 
 #####################################################################
 
+DecisionRule reach {
+  X, Y
+  { (gripper_support X) (object Y) (busy X)! (held Y)! } #(INFEASIBLE pick X Y)! }
+  { (reached X Y) (busy X) # these are only on the logical side, to enable correct preconditions
+    (touch X Y)# these are predicates that enter the NLP
+    }
+}
+
+#####################################################################
+
 DecisionRule place {
   X, Y, Z,
   { (picked X Y) (table Z) (held Y) }
@@ -76,7 +88,7 @@ DecisionRule place {
 
 DecisionRule fill {
   X, Y, Z,
-  { (picked X Y) (waterSource Z) (glass Y) (held Y) (empty Y)}
+  { (gripper X) (picked X Y) (waterSource Z) (glass Y) (held Y) (empty Y)}
   { (picked X Y)! (busy X)! (busy Y)! (held Y)! (empty Y)! (filled Y)# logic only
     (stable ANY Y)! (touch X Y)! # NLP predicates
     (on Z Y) (above Y Z) (stableOn Z Y) tmp(touch X Y) tmp(touch Y Z)
@@ -86,12 +98,12 @@ DecisionRule fill {
 
 #####################################################################
 
-DecisionRule fillPourAffordable {
+DecisionRule pourAffordable {
   X, Q, Y, Z,
-  { (gripper X) (gripper Q) (glass Y) (jug Z) (picked Q Z) (busy X)! (held Y)! (held Z) (empty Y) (filled Z)}
-  { (above Y ANY)! (on ANY Y)! (stableOn ANY Y)!
-    (picked X Y) (held Y) (busy X) (empty Y)! (filled Y)
-    (touch X Y) (stable X Y)
+  { (gripper_support X) (gripper Q) (glass Y) (jug Z) (filled Z) (picked Q Z) (reached X Y) (held Z) (empty Y) }
+  { (busy X)! (touch X Y)!
+    (filled Y)
+    tmp(touch X Y) tmp(touch Z Y)
     }
 }
 

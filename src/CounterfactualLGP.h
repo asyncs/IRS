@@ -8,7 +8,8 @@
 
 class CounterfactualLGP {
 public:
- CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, int environmentType, int objectCount, int task, std::string testName, int verbosity);
+CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, int environmentType, int taskSpecific,
+                   int objectCount, int task, const std::string &testName, int verbosity);
 
  static rai::LGP_NodeL decide(const rai::Configuration &kin, MiniLGP &simpleScenario, MiniLGP &counterfactualSubScenario,
                               MiniLGP &counterfactualScenario, int environmentType, int verbosity);
@@ -19,7 +20,7 @@ public:
                                              MiniLGP &counterfactualScenario, int environmentType);
 
 private:
- static void initializeEnvironment(rai::Configuration &kin, int environmentType, int objectCount, int task);
+ static void initializeEnvironment(rai::Configuration &kin, int environmentType, int taskSpecific, int objectCount, int task);
 
  static double estimateCost(const rai::Configuration &kin, rai::LGP_NodeL &path, int verbose);
 };

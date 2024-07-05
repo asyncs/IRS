@@ -66,7 +66,7 @@ endeffLaser(laser_tilt_mount_joint): { Q: "t(-0.00300578 0.00167121 0.0122175) d
 #endeffL(l_wrist_roll_joint): { Q: "t(.2 0 0)", shape: marker, color: [1, 0, 0], size: [.05, 0, 0, 0]}
 #endeffR(r_wrist_roll_joint): { Q: "t(.2 0 0)", shape: marker, color: [1, 0, 0], size: [.05, 0, 0, 0]}
 pr2R (r_wrist_roll_joint): { Q: "d(-90 0 1 0) d(-90 0 0 1) t(0 0 -.18)", shape: ssBox, size: [.03, .03, .05, .01], color: [1, 1, 0], logical:{ gripper } }
-pr2L (l_wrist_roll_joint): { Q: "d(-90 0 1 0) d(-90 0 0 1) t(0 0 -.18)", shape: ssBox, size: [.03, .03, .05, .01], color: [1, 1, 0], logical:{ gripper } }
+pr2L (l_wrist_roll_joint): { Q: "d(-90 0 1 0) d(-90 0 0 1) t(0 0 -.18)", shape: ssBox, size: [.03, .03, .05, .01], color: [1, 1, 0], logical:{ gripper_support } }
 
 #endeffForceL(l_wrist_roll_joint): { Q: "t(.20 0 0) d(-90 0 1 0) d(70.015 0 0 1)", shape: marker, color: [0, 1, 1], size: [.05, 0, 0, 0]}
 #endeffForceR(r_wrist_roll_joint): { Q: "t(.20 0 0) d(-90 0 1 0) d(70.015 0 0 1)", shape: marker, color: [0, 1, 1], size: [.05, 0, 0, 0]}

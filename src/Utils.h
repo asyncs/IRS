@@ -14,9 +14,10 @@
 #include "../../src/GenerateDecisionRule.h"
 
 namespace utils {
- std::optional<bool> generateProblem(rai::Configuration& C, int environmentType, int numObj, int task);
+ std::optional<bool> generateProblem(rai::Configuration& C, int environmentType, int taskSpecific, int numObj, int task);
  std::optional<std::string> initializeFol(const std::string& rootPath, const std::string& testName, const std::string& folFileName, int targetCount, int task);
  std::string trayCapacityRule(int objectCount);
+ std::string fillPitcherRule();
  std::string problem(int objectCount, int environmentType, int task);
 
 } // namespace utils
