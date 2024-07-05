@@ -36,21 +36,18 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
                     rai::Frame* tray_frame = C.addFrame("tray", "kitchen_counter",
                             "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6], contact, logical={ table, object }, joint:rigid");
                     tray_frame->setRelativePosition({-.1, -.6, .15});
-                    C.addFrame("", "tray", "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6]");
                     break;
                 }
                 case 2: {
                     rai::Frame* tray_frame = C.addFrame("tray", "kitchen_table",
                             "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6], contact, logical={ table, object }, joint:rigid");
                     tray_frame->setRelativePosition({-.1, -0.6, .15});
-                    C.addFrame("", "tray", "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6]");
                     break;
                 }
                 case 3: {
                     rai::Frame* tray_frame = C.addFrame("tray", "dining_table",
                             "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6], contact, logical={ table, object }, joint:rigid");
                     tray_frame->setRelativePosition({.1, 0.6, .15});
-                    C.addFrame("", "tray", "type:ssBox size:[.4 .4 .04 .02] color:[.22 .22 .6]");
                     break;
                 }
                 default:

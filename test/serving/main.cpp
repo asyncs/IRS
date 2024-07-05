@@ -7,9 +7,9 @@ int main(const int argc, char **argv) {
     try {
         constexpr int task = 1;
         const std::string testName = "serving";
-        constexpr int environmentType = 3;
+        constexpr int environmentType = 1;
         constexpr int trayLocation = 3;
-        constexpr int objectCount = 5;
+        constexpr int objectCount = 1;
         constexpr int totalObjectCount = objectCount;
         constexpr int verbosity = 0;
 

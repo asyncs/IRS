@@ -116,8 +116,6 @@ rai::LGP_NodeL CounterfactualLGP::decide_symbolic(const rai::Configuration &kin,
     const rai::LGP_NodeL counterfactualSubPath = counterfactualSubScenario.imagine_symbolic(1000000, counterfactualSubRoot);
 
     rai::LGP_NodeL counterfactualPath = counterfactualScenario.imagine_symbolic(1000000, counterfactualSubPath);
-    cout <<simplePath.last()->getTreePathString()<<endl;
-    cout <<counterfactualPath.last()->getTreePathString()<<endl;
 
     // const double simpleCount = estimateCost(kin, simplePath, false);
     // std::cout << "SIMPLE COUNT: " << simpleCount << std::endl;
