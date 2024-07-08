@@ -209,8 +209,8 @@ auto generateProblem(rai::Configuration &C, const int environmentType,  const in
             for (;;) {
                 C.clear();
                 C.addFile("../../models/scenes/handover_room.g");
-                C.addFile("../../models/pr2/pr2.g");
-                C["worldTranslationRotation"]->setPosition({2, 2, .15});
+                // C.addFile("../../models/pr2/pr2.g");
+                // C["worldTranslationRotation"]->setPosition({2, 2, .15});
                 C.optimizeTree();
 
                 C["panda_gripper"]->ats->add<rai::Graph>({"logical"}, {{"helper_gripper", true}});
