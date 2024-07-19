@@ -119,9 +119,24 @@ rai::LGP_NodeL CounterfactualLGP::decide_symbolic(rai::Configuration &kin, MiniL
 
     rai::LGP_NodeL counterfactualPath = counterfactualScenario.imagine_symbolic(1000000, counterfactualSubPath);
 
-    // kin.view(true);
-    bool simpleSuccess;
-    simpleSuccess = solveMotionForSymbolic(kin, simplePath);
+    const double simpleCount = estimateCostDual(kin, simplePath, false);
+    std::cout << "SIMPLE COUNT: " << simpleCount << std::endl;
+    const double counterfactualCount = estimateCostDual(kin, counterfactualPath, false);
+    std::cout << "COUNTERFACTUAL COUNT: " << counterfactualCount << std::endl;
+    const double ett = counterfactualCount - simpleCount;
+    std::cout << "ETT:" << ett << std::endl;
+
+    if (ett >= 0) {
+        cout<<"'label_utilize': 0,"<<endl;
+        cout<<"'mbts_effort':"<<simpleCount<<", 'counterfactual_effort':" << counterfactualCount << endl;
+        cout<<"}"<<endl;;
+        return simplePath;
+    } else {
+        cout<<"'label_utilize': 1,"<<endl;
+        cout<<"'mbts_effort':"<<simpleCount<<", 'counterfactual_effort':" << counterfactualCount << endl;
+        cout<<"}"<<endl;;
+        return counterfactualPath;
+    }
 }
 
 rai::LGP_NodeL CounterfactualLGP::decide_uninformed(const rai::Configuration &kin, MiniLGP &simpleScenario) {
@@ -267,6 +282,158 @@ double CounterfactualLGP::estimateCost(const rai::Configuration &kin, rai::LGP_N
             cost += stepCost;
             robotPosition = targetPosition;
         }else if (decisionString.getSubString(1, 4) == "pour") {
+            if (verbosity >= 1) {
+                std::cout << "NEGLIGIBLE MOTION" << std::endl;
+            }
+        }
+
+        else {
+            std::cout << "ERROR: UNKNOWN DECISION" << std::endl;
+        }
+        node = node->parent;
+    }
+
+    return cost;
+}
+
+double CounterfactualLGP::estimateCostDual(const rai::Configuration &kin, rai::LGP_NodeL &path, int verbosity) {
+    double cost = 0;
+    rai::LGP_Node *node = path.last();
+    arr robotPosition = kin.getFrame("pr2R")->getPosition();
+    arr helperPosition = kin.getFrame("panda_gripper")->getPosition();
+
+
+    while (node && node->decision) {
+        rai::String decisionString;
+        decisionString << (*node->decision.get());
+        rai::NodeL objects = node->folDecision->parents;
+
+        if (decisionString.getSubString(1, 5) == "carry" || decisionString.getSubString(1, 5) == "place"|| decisionString.getSubString(1, 4) == "give") {
+            rai::Node *eff = objects(1);
+            rai::String effString;
+            effString << (*eff);
+
+            rai::Node *object = objects(2);
+            rai::String objectString;
+            objectString << (*object);
+
+            if (verbosity >= 1) std::cout << "OBJECT: " << *object << std::endl;
+
+            rai::Frame *objectFrame = kin.getFrame(objectString);
+            arr objectPosition = objectFrame->getPosition();
+
+            if (verbosity >= 2) std::cout << "OBJECT POSITION: " << objectPosition << std::endl;
+
+            rai::Node *target = objects(3);
+            rai::String targetString;
+            targetString << (*target);
+
+            if (verbosity >= 1) std::cout << "TARGET: " << *target << std::endl;
+
+            rai::Frame *targetFrame = kin.getFrame(targetString);
+            arr targetPosition = targetFrame->getPosition();
+
+            if (verbosity >= 2) std::cout << "TARGET POSITION: " << targetPosition << std::endl;
+
+            if(effString.getSubString(0, 4) == "panda" ) {
+                cost +=  sqrt(pow((helperPosition(0) - targetPosition(0))/2, 2) + pow((helperPosition(1) - targetPosition(1))/2, 2) +
+                                                   pow((helperPosition(2) - targetPosition(2))/2, 2));
+            }
+            else {
+                cost += abs(objectPosition(0) - targetPosition(0)) +
+                        abs(objectPosition(1) - targetPosition(1)) +
+                        abs(objectPosition(2) - targetPosition(2));
+            }
+
+        } else if (decisionString.getSubString(1, 4) == "pick") {
+            rai::Node *object = objects(1);
+            rai::String objectString;
+            objectString << (*object);
+
+            if (verbosity >= 1) {
+                std::cout << "ROBOT: " << *object << std::endl;
+                std::cout << "ROBOT POSITION: " << robotPosition << std::endl;
+            }
+
+            rai::Node *target = objects(2);
+            rai::String targetString;
+            targetString << (*target);
+
+            if (verbosity >= 1) std::cout << "TARGET: " << *target << std::endl;
+
+            rai::Frame *targetFrame = kin.getFrame(targetString);
+            arr targetPosition = targetFrame->getPosition();
+
+            if (verbosity >= 2) std::cout << "TARGET POSITION: " << targetPosition << std::endl;
+
+            double stepCost = abs(robotPosition(0) - targetPosition(0)) +
+                            abs(robotPosition(1) - targetPosition(1)) +
+                            abs(robotPosition(2) - targetPosition(2));
+
+            cost += stepCost;
+            robotPosition = targetPosition;
+
+            if (verbosity >= 1) std::cout << "STEP COST: " << stepCost << std::endl;
+        } else if (decisionString.getSubString(1, 4) == "fill") {
+            rai::Node *object = objects(1);
+            rai::String objectString;
+            objectString << (*object);
+
+            if (verbosity >= 1) {
+                std::cout << "ROBOT: " << *object << std::endl;
+                std::cout << "ROBOT POSITION: " << robotPosition << std::endl;
+            }
+
+            rai::Node *target = objects(3);
+            rai::String targetString;
+            targetString << (*target);
+
+            if (verbosity >= 1) std::cout << "TARGET: " << *target << std::endl;
+
+            rai::Frame *targetFrame = kin.getFrame(targetString);
+            arr targetPosition = targetFrame->getPosition();
+
+            if (verbosity >= 2) std::cout << "TARGET POSITION: " << targetPosition << std::endl;
+
+            double stepCost = abs(robotPosition(0) - targetPosition(0)) +
+                            abs(robotPosition(1) - targetPosition(1)) +
+                            abs(robotPosition(2) - targetPosition(2));
+
+            cost += stepCost;
+            robotPosition = targetPosition;
+        } else if (decisionString.getSubString(1, 5) == "reach") {
+            rai::Node *object = objects(1);
+            rai::String objectString;
+            objectString << (*object);
+
+            if (verbosity >= 1) {
+                std::cout << "ROBOT: " << *object << std::endl;
+                std::cout << "ROBOT POSITION: " << robotPosition << std::endl;
+            }
+
+            rai::Node *target = objects(2);
+            rai::String targetString;
+            targetString << (*target);
+
+            if (verbosity >= 1) std::cout << "TARGET: " << *target << std::endl;
+
+            rai::Frame *targetFrame = kin.getFrame(targetString);
+            arr targetPosition = targetFrame->getPosition();
+
+            if (verbosity >= 2) std::cout << "TARGET POSITION: " << targetPosition << std::endl;
+
+            double stepCost = abs(robotPosition(0) - targetPosition(0)) +
+                            abs(robotPosition(1) - targetPosition(1)) +
+                            abs(robotPosition(2) - targetPosition(2));
+
+
+            cost += stepCost;
+            robotPosition = targetPosition;
+        }else if (decisionString.getSubString(1, 4) == "pour") {
+            if (verbosity >= 1) {
+                std::cout << "NEGLIGIBLE MOTION" << std::endl;
+            }
+        }else if (decisionString.getSubString(1, 4) == "hand") {
             if (verbosity >= 1) {
                 std::cout << "NEGLIGIBLE MOTION" << std::endl;
             }

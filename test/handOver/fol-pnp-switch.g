@@ -55,14 +55,16 @@ REWARD {
 
 #####################################################################
 
+
 DecisionRule pick {
-  X, Y
-  { (gripper X) (object Y) (busy X)! (held Y)! } #(INFEASIBLE pick X Y)! }
-  { (above Y ANY)! (on ANY Y)! (stableOn ANY Y)! 
+  X, Y, Z
+  { (gripper X) (object Y) (helper_zone Z) (on Z Y)! (busy X)! (held Y)! } #(INFEASIBLE pick X Y)! }
+  { (above Y ANY)! (on ANY Y)! (stableOn ANY Y)!
     (picked X Y) (held Y) (busy X) # these are only on the logical side, to enable correct preconditions
     (touch X Y) (stable X Y) # these are predicates that enter the NLP
     }
 }
+
 
 #####################################################################
 

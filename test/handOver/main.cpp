@@ -7,14 +7,14 @@ int main(const int argc, char **argv) {
     try {
         constexpr int task = 3;
         const std::string testName = "handOver";
-        int environmentType = 1;
+        int environmentType = 0;
         constexpr int taskSpecific = 0;
         int objectCount;
 
         if (environmentType < 3) {
             objectCount = 1;
         }
-        else if (environmentType >= 3 && environmentType < 9) {
+        else if (environmentType >= 3 && environmentType < 7) {
             objectCount = 2;
         }
         else{
