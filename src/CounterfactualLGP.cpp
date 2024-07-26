@@ -6,7 +6,12 @@
 
 
 CounterfactualLGP::CounterfactualLGP(rai::Configuration &kin, const char *terminalRule, const int environmentType, const int taskSpecific, const int objectCount, const int task, const std::string &testName, const int verbosity) {
-    const std::string rootPath = "/home/asy/git/CA-TAMP/";
+    const char* homeDir = std::getenv("HOME");
+    if (!homeDir) {
+        std::cerr << "Environment variable HOME is not set" << std::endl;
+    }
+
+    std::string rootPath = std::string(homeDir) + "/git/CA-TAMP/";
     const std::string folFile = "fol-pnp-switch.g";
     const std::string folFileS = "fol-pnp-switch-S.g";
 

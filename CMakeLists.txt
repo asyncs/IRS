@@ -9,6 +9,12 @@ endif()
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ version selection") # Update this line to use C++17
 find_package(Python REQUIRED)
 
+# Automatically find the pybind11 cmake directory
+execute_process(
+        COMMAND ${Python_EXECUTABLE} -c "import pybind11; print(pybind11.get_cmake_dir())"
+        OUTPUT_VARIABLE pybind11_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 REQUIRED)
 set(PYBIND11_PYTHON_VERSION 3.10 CACHE STRING "python version")
@@ -32,8 +38,6 @@ add_compile_options(
         $<$<COMPILE_LANGUAGE:CXX>:-Wno-terminate>
 )
 
-################################################################################
-
 add_definitions(
         -DRAI_ROOT_PATH=\"${CMAKE_SOURCE_DIR}/rai\"
         -DRAI_X11 -DRAI_LAPACK -DRAI_EIGEN -DRAI_PTHREAD
@@ -42,8 +46,6 @@ add_definitions(
         -DRAI_GJK -DRAI_CCD -DRAI_FCL -DRAI_Lewiner
         -BOOST_ERROR_CODE_HEADER_ONLY
 )
-
-################################################################################
 
 include_directories(
         rai/src
@@ -85,8 +87,6 @@ target_link_libraries(rai
         assimp ccd fcl qhull ann glfw GLEW glut GLU GL png
         boost_system
 )
-
-################################################################################
 
 find_package(PkgConfig REQUIRED)
 
@@ -130,8 +130,6 @@ if(USE_LIBFRANKA)
   message(STATUS "[rai] using libfranka")
 endif()
 
-################################################################################
-
 if(USE_PYBIND)
   set(PYTHON_EXECUTABLE "python${PYBIND11_PYTHON_VERSION}")
   message(STATUS "[rai] using python executable " ${PYTHON_EXECUTABLE} )
@@ -144,15 +142,10 @@ if(USE_PYBIND)
   find_package(pybind11)
   add_definitions(-DRAI_PYBIND)
   include_directories(${pybind11_INCLUDE_DIRS})
-
 endif()
-
-################################################################################
 
 get_property(_defs DIRECTORY PROPERTY COMPILE_DEFINITIONS)
 message(STATUS "[rai] compiler flags: " "${_defs}")
-
-################################################################################
 
 add_executable(kinEdit rai/bin/src_kinEdit/main.cpp)
 target_link_libraries(kinEdit rai)
@@ -201,8 +194,6 @@ add_executable(handOver test/handOver/main.cpp
         src/Utils.h
 )
 target_link_libraries(handOver rai)
-
-################################################################################
 
 install(
         TARGETS rai
