@@ -71,4 +71,4 @@ To understand how IRS operates, set the environment and task parameters e.g., in
 cd ../test/serving
 ./../../build/serving 
 ```
-To understand how ORS operates, you can navigate to its directory, 'ORS,' to take a closer look.
+To understand how ORS operates, you can navigate to its directory, 'ors' to take a closer look.
